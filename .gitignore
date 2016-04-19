@@ -39,5 +39,5 @@ node_modules
 lib/
 data/
 
-config/development.json
+config/default.json
 config/production.json

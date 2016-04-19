@@ -6,11 +6,13 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
 
 const userSchema = new Schema({
   redditId: { type: String },
   reddit: { type: Schema.Types.Mixed },
+  team: { type: ObjectId, ref: 'team'}, 
   
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
