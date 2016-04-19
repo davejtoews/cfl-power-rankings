@@ -1,4 +1,4 @@
-# CFl Power Rankings
+# cfl-power-rankings
 
 > An API and interface for building the weeking Power Rankings for /r/CFL
 
@@ -14,7 +14,7 @@ Getting up and running is as easy as 1, 2, 3.
 2. Install your dependencies
     
     ```
-    cd path/to/CFl Power Rankings; npm install
+    cd path/to/cfl-power-rankings; npm install
     ```
 
 3. Start your app

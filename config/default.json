@@ -1,16 +1,16 @@
 {
   "host": "localhost",
   "port": 3030,
-  "mongodb": "mongodb://localhost:27017/CFlPowerRankings",
+  "mongodb": "mongodb://localhost:27017/CflPowerRankings",
   "public": "../public/",
   "auth": {
     "token": {
       "secret": "L9XSrp7/8Pczl+Oxtr9RmCe0pIzUCjghtqq54gS48uCqoIK1nJhpFU6f3ekPUhTRuv34to0Pv5IgY4ZvcGztwA=="
     },
     "local": {},
-    "google": {
-      "clientID": "your google client id",
-      "clientSecret": "your google client secret",
+    "reddit": {
+      "clientID": "your reddit client id",
+      "clientSecret": "your reddit client secret",
       "permissions": {
         "scope": ["profile"]
       }

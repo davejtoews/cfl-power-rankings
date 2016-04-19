@@ -1,5 +1,5 @@
 {
-  "host": "CFl Power Rankings-app.feathersjs.com",
+  "host": "cfl-power-rankings-app.feathersjs.com",
   "port": 80,
   "mongodb": "DATABASE_URL",
   "public": "../public/",
@@ -8,11 +8,11 @@
       "secret": "FEATHERS_AUTH_SECRET"
     },
     "local": {},
-    "google": {
-      "clientID": "your google client id",
-      "clientSecret": "your google client secret",
+    "reddit": {
+      "clientID": "h8nIVCdo8Ac_gA",
+      "clientSecret": "7k_Ct95sSK8mRzWK0xcVNIXmmm0",
       "permissions": {
-        "scope": ["profile"]
+        "scope": ["identity"]
       }
     }
   }

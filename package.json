@@ -1,5 +1,5 @@
 {
-  "name": "CFl Power Rankings",
+  "name": "cfl-power-rankings",
   "description": "An API and interface for building the weeking Power Rankings for /r/CFL",
   "version": "0.0.0",
   "homepage": "",

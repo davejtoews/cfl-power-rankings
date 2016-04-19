@@ -38,3 +38,6 @@ node_modules
 
 lib/
 data/
+
+config/development.json
+config/production.json

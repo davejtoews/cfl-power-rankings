@@ -11,7 +11,7 @@ const Schema = mongoose.Schema,
 
 const weekSchema = new Schema({
   name: { type: String, required: true },
-  year: { type: OjbectId, ref: 'year' },
+  year: { type: ObjectId, ref: 'year' },
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
 });
