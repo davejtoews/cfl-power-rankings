@@ -1,4 +1,5 @@
 'use strict';
+const config = require('./config');
 const ranking = require('./ranking');
 const team = require('./team');
 const week = require('./week');
@@ -18,4 +19,5 @@ module.exports = function() {
   app.configure(week);
   app.configure(team);
   app.configure(ranking);
+  app.configure(config);
 };
