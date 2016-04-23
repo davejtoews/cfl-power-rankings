@@ -1,6 +1,12 @@
 var React = require('react');
 
 module.exports = React.createClass({
+	getInitialState: function() {
+
+	},
+	componentDidMount: function() {
+
+	},
 	handleClick: function(evt) {
 		if (this.props.login) {
 			evt.preventDefault();

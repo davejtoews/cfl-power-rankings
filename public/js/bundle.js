@@ -19364,34 +19364,38 @@ module.exports = require('./lib/React');
 },{"./lib/React":52}],166:[function(require,module,exports){
 'use strict';
 
+var app = require('./app.js');
+
 var React = require('react');
 var ReactDOM = require('react-dom');
 var LoginButton = require('./LoginButton.jsx');
 
-// Set up socket.io
-var host = 'http://localhost:3030';
-var socket = io(host);
-
-// Set up Feathers client side
-var app = feathers().configure(feathers.socketio(socket)).configure(feathers.hooks()).configure(feathers.authentication({ storage: window.localStorage }));
-
 // Authenticating using a token
 app.authenticate().then(function (result) {
-		console.log('Authenticated!', app.get('token'));
-		renderApp(true);
+	console.log('Authenticated!', app.get('token'));
+	renderApp(true);
 }).catch(function (error) {
-		console.error('Error authenticating!', error);
-		renderApp(false);
+	console.error('Error authenticating!', error);
+	renderApp(false);
+});
+
+var Wrapper = React.createClass({
+	displayName: 'Wrapper',
+
+	getInitialState: function getInitialState() {},
+	componentDidMount: function componentDidMount() {},
+	render: function render() {
+		return React.createElement(LoginButton, {
+			app: app
+		});
+	}
 });
 
 function renderApp(login) {
-		ReactDOM.render(React.createElement(LoginButton, {
-				login: login,
-				app: app
-		}), document.getElementById('App'));
+	ReactDOM.render(React.createElement(Wrapper, null), document.getElementById('App'));
 }
 
-},{"./LoginButton.jsx":167,"react":165,"react-dom":28}],167:[function(require,module,exports){
+},{"./LoginButton.jsx":167,"./app.js":168,"react":165,"react-dom":28}],167:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -19399,6 +19403,8 @@ var React = require('react');
 module.exports = React.createClass({
 	displayName: 'exports',
 
+	getInitialState: function getInitialState() {},
+	componentDidMount: function componentDidMount() {},
 	handleClick: function handleClick(evt) {
 		if (this.props.login) {
 			evt.preventDefault();
@@ -19420,4 +19426,7 @@ module.exports = React.createClass({
 	}
 });
 
-},{"react":165}]},{},[166]);
+},{"react":165}],168:[function(require,module,exports){
+"use strict";
+
+},{}]},{},[166]);
