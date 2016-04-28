@@ -1,25 +1,24 @@
-var React = require('react');
+import React from 'react';
 
 module.exports = React.createClass({
-	getInitialState: function() {
-
-	},
-	componentDidMount: function() {
-
+	contextTypes: {
+		feathersApp: React.PropTypes.object,
+		login: React.PropTypes.bool
 	},
 	handleClick: function(evt) {
-		if (this.props.login) {
+		if (this.context.login) {
 			evt.preventDefault();
-			this.props.app.logout().then(function(result){
+			this.context.feathersApp.logout().then(function(result){
 			  console.log('Logged out!', result );
+			  window.location.reload();
 			}).catch(function(error){
 			  console.error('Error logging out!', error);
 			});
 		}
 	},
 	render: function () {
-		var url = this.props.login ? '/' : '/auth/reddit';
-		var text = this.props.login ? 'Logout' : 'Login';
+		var url = this.context.login ? '/' : '/auth/reddit';
+		var text = this.context.login ? 'Logout' : 'Login';
 		return(
 			<a href={ url } className="button" onClick={ this.handleClick }>{ text }</a>
 		);

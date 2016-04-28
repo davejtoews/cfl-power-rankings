@@ -19364,61 +19364,65 @@ module.exports = require('./lib/React');
 },{"./lib/React":52}],166:[function(require,module,exports){
 'use strict';
 
-var app = require('./app.js');
+var _react = require('react');
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-var LoginButton = require('./LoginButton.jsx');
+var _react2 = _interopRequireDefault(_react);
 
-// Authenticating using a token
-app.authenticate().then(function (result) {
-	console.log('Authenticated!', app.get('token'));
-	renderApp(true);
-}).catch(function (error) {
-	console.error('Error authenticating!', error);
-	renderApp(false);
-});
+var _LoginButton = require('./LoginButton');
 
-var Wrapper = React.createClass({
-	displayName: 'Wrapper',
+var _LoginButton2 = _interopRequireDefault(_LoginButton);
 
-	getInitialState: function getInitialState() {},
-	componentDidMount: function componentDidMount() {},
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	childContextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getChildContext: function getChildContext() {
+		return {
+			feathersApp: this.props.feathersApp,
+			login: this.props.login
+		};
+	},
 	render: function render() {
-		return React.createElement(LoginButton, {
-			app: app
-		});
+		return _react2.default.createElement(_LoginButton2.default, null);
 	}
 });
 
-function renderApp(login) {
-	ReactDOM.render(React.createElement(Wrapper, null), document.getElementById('App'));
-}
-
-},{"./LoginButton.jsx":167,"./app.js":168,"react":165,"react-dom":28}],167:[function(require,module,exports){
+},{"./LoginButton":167,"react":165}],167:[function(require,module,exports){
 'use strict';
 
-var React = require('react');
+var _react = require('react');
 
-module.exports = React.createClass({
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
 	displayName: 'exports',
 
-	getInitialState: function getInitialState() {},
-	componentDidMount: function componentDidMount() {},
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
 	handleClick: function handleClick(evt) {
-		if (this.props.login) {
+		if (this.context.login) {
 			evt.preventDefault();
-			this.props.app.logout().then(function (result) {
+			this.context.feathersApp.logout().then(function (result) {
 				console.log('Logged out!', result);
+				window.location.reload();
 			}).catch(function (error) {
 				console.error('Error logging out!', error);
 			});
 		}
 	},
 	render: function render() {
-		var url = this.props.login ? '/' : '/auth/reddit';
-		var text = this.props.login ? 'Logout' : 'Login';
-		return React.createElement(
+		var url = this.context.login ? '/' : '/auth/reddit';
+		var text = this.context.login ? 'Logout' : 'Login';
+		return _react2.default.createElement(
 			'a',
 			{ href: url, className: 'button', onClick: this.handleClick },
 			text
@@ -19427,6 +19431,42 @@ module.exports = React.createClass({
 });
 
 },{"react":165}],168:[function(require,module,exports){
-"use strict";
+'use strict';
 
-},{}]},{},[166]);
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = require('react-dom');
+
+var _App = require('./components/App');
+
+var _App2 = _interopRequireDefault(_App);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// Set up socket.io
+var host = 'http://localhost:3030';
+var socket = io(host);
+
+// Set up Feathers client side
+var feathersApp = feathers().configure(feathers.socketio(socket)).configure(feathers.hooks()).configure(feathers.authentication({ storage: window.localStorage }));
+
+// Authenticating using a token
+feathersApp.authenticate().then(function (result) {
+		console.log('Authenticated!', feathersApp.get('token'));
+		renderApp(true);
+}).catch(function (error) {
+		console.error('Error authenticating!', error);
+		renderApp(false);
+});
+
+// Set up socket.io
+var host = 'http://localhost:3030';
+var socket = io(host);
+
+function renderApp(login) {
+		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login }), document.getElementById('App'));
+}
+
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[168]);

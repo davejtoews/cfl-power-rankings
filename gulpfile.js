@@ -18,10 +18,10 @@ function handleErrors() {
   this.emit('end'); // Keep gulp from hanging on this task
 }
 
-function buildScript(file, watch) {
+function buildScript(watch) {
   
   var props = {
-    entries: ['./public/js/src/' + file],
+    entries: ['./public/js/index.js'],
     debug : false,
     transform:  [babelify]
   };
@@ -48,12 +48,12 @@ function buildScript(file, watch) {
 
 // run once
 gulp.task('scripts', function() {
-  return buildScript('App.jsx', false);
+  return buildScript(false);
 });
 
 // run once then watch for changes
 gulp.task('scripts:watch', function() {
-  return buildScript('App.jsx', true);
+  return buildScript(true);
 });
 
 gulp.task('default', ['scripts']);
