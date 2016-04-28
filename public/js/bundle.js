@@ -19372,6 +19372,10 @@ var _LoginButton = require('./LoginButton');
 
 var _LoginButton2 = _interopRequireDefault(_LoginButton);
 
+var _Info = require('./Info');
+
+var _Info2 = _interopRequireDefault(_Info);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -19387,12 +19391,81 @@ module.exports = _react2.default.createClass({
 			login: this.props.login
 		};
 	},
+	getInitialState: function getInitialState() {
+		return {
+			year: '',
+			week: ''
+		};
+	},
+	getInfo: function getInfo(currentWeekId) {
+		var setInfo = this.setInfo;
+		this.props.feathersApp.service('weeks').get(currentWeekId, { query: { $populate: 'year' } }).then(function (result) {
+			setInfo(result.name, result.year.year);
+		});
+	},
+	setInfo: function setInfo(week, year) {
+		this.setState({
+			week: week,
+			year: year
+		});
+	},
+	componentDidMount: function componentDidMount() {
+		if (this.props.login) {
+			var getInfo = this.getInfo;
+			this.props.feathersApp.service('configs').find({ query: { name: 'current_week' } }).then(function (result) {
+				getInfo(result.data[0].value);
+			});
+		}
+	},
 	render: function render() {
-		return _react2.default.createElement(_LoginButton2.default, null);
+		return _react2.default.createElement(
+			'div',
+			null,
+			_react2.default.createElement(_Info2.default, { year: this.state.year, week: this.state.week, username: this.props.username }),
+			_react2.default.createElement(_LoginButton2.default, null)
+		);
 	}
 });
 
-},{"./LoginButton":167,"react":165}],167:[function(require,module,exports){
+},{"./Info":167,"./LoginButton":168,"react":165}],167:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	render: function render() {
+		return _react2.default.createElement(
+			'ul',
+			null,
+			_react2.default.createElement(
+				'li',
+				null,
+				'Year: ',
+				this.props.year
+			),
+			_react2.default.createElement(
+				'li',
+				null,
+				'Week: ',
+				this.props.week
+			),
+			_react2.default.createElement(
+				'li',
+				null,
+				'User: ',
+				this.props.username
+			)
+		);
+	}
+});
+
+},{"react":165}],168:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19430,7 +19503,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":165}],168:[function(require,module,exports){
+},{"react":165}],169:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19455,18 +19528,18 @@ var feathersApp = feathers().configure(feathers.socketio(socket)).configure(feat
 // Authenticating using a token
 feathersApp.authenticate().then(function (result) {
 		console.log('Authenticated!', feathersApp.get('token'));
-		renderApp(true);
+		renderApp(true, result.data.reddit.name);
 }).catch(function (error) {
 		console.error('Error authenticating!', error);
-		renderApp(false);
+		renderApp(false, 'unknown');
 });
 
 // Set up socket.io
 var host = 'http://localhost:3030';
 var socket = io(host);
 
-function renderApp(login) {
-		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login }), document.getElementById('App'));
+function renderApp(login, username) {
+		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username }), document.getElementById('App'));
 }
 
-},{"./components/App":166,"react":165,"react-dom":28}]},{},[168]);
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[169]);
