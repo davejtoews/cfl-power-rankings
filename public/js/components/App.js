@@ -1,7 +1,7 @@
 import React from 'react';
 import LoginButton from './LoginButton';
 import Info from './Info';
-
+import TeamList from './TeamList';
 
 
 
@@ -20,6 +20,7 @@ module.exports = React.createClass({
 		return {
 			year: '',
 			week: '',
+			teams: []
 		}
 	},
 	getInfo: function(currentWeekId) {
@@ -34,12 +35,21 @@ module.exports = React.createClass({
 			year: year
 		});	
 	},
+	setTeams: function(teams) {
+		this.setState({
+			teams: teams
+		});
+	},
 	componentDidMount: function() {
 		if (this.props.login) {
 			var getInfo = this.getInfo;
+			var setTeams = this.setTeams;
 			this.props.feathersApp.service('configs').find({query: { name: 'current_week'}}).then(function(result){
 				getInfo(result.data[0].value);
-			});	
+			});
+			this.props.feathersApp.service('teams').find().then(function(result){
+				setTeams(result.data);
+			});
 		}
 	},
 	render: function () {

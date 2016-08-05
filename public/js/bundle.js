@@ -19376,6 +19376,10 @@ var _Info = require('./Info');
 
 var _Info2 = _interopRequireDefault(_Info);
 
+var _TeamList = require('./TeamList');
+
+var _TeamList2 = _interopRequireDefault(_TeamList);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -19394,7 +19398,8 @@ module.exports = _react2.default.createClass({
 	getInitialState: function getInitialState() {
 		return {
 			year: '',
-			week: ''
+			week: '',
+			teams: []
 		};
 	},
 	getInfo: function getInfo(currentWeekId) {
@@ -19409,11 +19414,20 @@ module.exports = _react2.default.createClass({
 			year: year
 		});
 	},
+	setTeams: function setTeams(teams) {
+		this.setState({
+			teams: teams
+		});
+	},
 	componentDidMount: function componentDidMount() {
 		if (this.props.login) {
 			var getInfo = this.getInfo;
+			var setTeams = this.setTeams;
 			this.props.feathersApp.service('configs').find({ query: { name: 'current_week' } }).then(function (result) {
 				getInfo(result.data[0].value);
+			});
+			this.props.feathersApp.service('teams').find().then(function (result) {
+				setTeams(result.data);
 			});
 		}
 	},
@@ -19427,7 +19441,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./Info":167,"./LoginButton":168,"react":165}],167:[function(require,module,exports){
+},{"./Info":167,"./LoginButton":168,"./TeamList":169,"react":165}],167:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19504,6 +19518,9 @@ module.exports = _react2.default.createClass({
 });
 
 },{"react":165}],169:[function(require,module,exports){
+"use strict";
+
+},{}],170:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19542,4 +19559,4 @@ function renderApp(login, username) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username }), document.getElementById('App'));
 }
 
-},{"./components/App":166,"react":165,"react-dom":28}]},{},[169]);
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[170]);
