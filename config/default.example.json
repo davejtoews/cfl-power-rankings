@@ -1,9 +1,9 @@
-//Replace Client ID and Client Secret and rename default.json
+//Replace Client ID and Client Secret, rename default.json and remove comment
 
 {
   "host": "localhost",
   "port": 3030,
-  "mongodb": "mongodb://localhost:27017/CflPowerRankings",
+  "mongodb": "mongodb://localhost:27017/CFlPowerRankings",
   "public": "../public/",
   "auth": {
     "token": {
@@ -14,8 +14,9 @@
       "clientID": "your reddit client id",
       "clientSecret": "your reddit client secret",
       "permissions": {
-        "scope": ["profile"]
-      }
+        "scope": ["identity"]
+      },
+      "successRedirect" : "/"
     }
   },
   "corsWhitelist": []
