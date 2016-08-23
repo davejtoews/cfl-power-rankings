@@ -19372,15 +19372,18 @@ var _LoginButton = require('./LoginButton');
 
 var _LoginButton2 = _interopRequireDefault(_LoginButton);
 
-var _Info = require('./Info');
+var _SortableList = require('./SortableList');
 
-var _Info2 = _interopRequireDefault(_Info);
-
-var _TeamList = require('./TeamList');
-
-var _TeamList2 = _interopRequireDefault(_TeamList);
+var _SortableList2 = _interopRequireDefault(_SortableList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var data = {
+	items: ["Gold", "Crimson", "Hotpink", "Blueviolet", "Cornflowerblue"]
+};
+//import Info from './Info';
+//import TeamList from './TeamList';
+
 
 module.exports = _react2.default.createClass({
 	displayName: 'exports',
@@ -19435,51 +19438,14 @@ module.exports = _react2.default.createClass({
 		return _react2.default.createElement(
 			'div',
 			null,
-			_react2.default.createElement(_Info2.default, { year: this.state.year, week: this.state.week, username: this.props.username }),
+			_react2.default.createElement(Info, { year: this.state.year, week: this.state.week, username: this.props.username }),
+			_react2.default.createElement(_SortableList2.default, { data: data }),
 			_react2.default.createElement(_LoginButton2.default, null)
 		);
 	}
 });
 
-},{"./Info":167,"./LoginButton":168,"./TeamList":169,"react":165}],167:[function(require,module,exports){
-'use strict';
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-module.exports = _react2.default.createClass({
-	displayName: 'exports',
-
-	render: function render() {
-		return _react2.default.createElement(
-			'ul',
-			null,
-			_react2.default.createElement(
-				'li',
-				null,
-				'Year: ',
-				this.props.year
-			),
-			_react2.default.createElement(
-				'li',
-				null,
-				'Week: ',
-				this.props.week
-			),
-			_react2.default.createElement(
-				'li',
-				null,
-				'User: ',
-				this.props.username
-			)
-		);
-	}
-});
-
-},{"react":165}],168:[function(require,module,exports){
+},{"./LoginButton":167,"./SortableList":168,"react":165}],167:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19517,10 +19483,10 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":165}],169:[function(require,module,exports){
+},{"react":165}],168:[function(require,module,exports){
 "use strict";
 
-},{}],170:[function(require,module,exports){
+},{}],169:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19559,4 +19525,4 @@ function renderApp(login, username) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username }), document.getElementById('App'));
 }
 
-},{"./components/App":166,"react":165,"react-dom":28}]},{},[170]);
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[169]);

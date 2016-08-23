@@ -1,9 +1,18 @@
 import React from 'react';
 import LoginButton from './LoginButton';
-import Info from './Info';
-import TeamList from './TeamList';
+//import Info from './Info';
+//import TeamList from './TeamList';
+import SortableList from './SortableList';
 
-
+var data = {
+  items: [
+    "Gold",
+    "Crimson",
+    "Hotpink",
+    "Blueviolet",
+    "Cornflowerblue"
+  ]
+};
 
 module.exports = React.createClass({
 	childContextTypes: {
@@ -27,7 +36,7 @@ module.exports = React.createClass({
 		var setInfo = this.setInfo;
 		this.props.feathersApp.service('weeks').get(currentWeekId, {query: { $populate: 'year' }}).then(function(result){
 			setInfo(result.name,result.year.year);
-		});	
+		});
 	},
 	setInfo: function(week, year) {
 		this.setState({
@@ -56,6 +65,8 @@ module.exports = React.createClass({
 		return(
 			<div>
 				<Info year={this.state.year} week={this.state.week} username={this.props.username} />
+				{/* <TeamList teams={this.state.teams} /> */}
+				<SortableList data={data} />
 				<LoginButton />
 			</div>
 
