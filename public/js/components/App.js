@@ -1,18 +1,8 @@
 import React from 'react';
 import LoginButton from './LoginButton';
-//import Info from './Info';
-//import TeamList from './TeamList';
-import SortableList from './SortableList';
-
-var data = {
-  items: [
-    "Gold",
-    "Crimson",
-    "Hotpink",
-    "Blueviolet",
-    "Cornflowerblue"
-  ]
-};
+import Info from './Info';
+import TeamList from './TeamList';
+import SubmitButton from './SubmitButton';
 
 module.exports = React.createClass({
 	childContextTypes: {
@@ -62,11 +52,15 @@ module.exports = React.createClass({
 		}
 	},
 	render: function () {
+		var conditionalTeamlist = ''
+		if(this.state.teams.length) {
+			conditionalTeamlist = <TeamList teams={this.state.teams} setTeams={this.setTeams} />
+		}
 		return(
 			<div>
 				<Info year={this.state.year} week={this.state.week} username={this.props.username} />
-				{/* <TeamList teams={this.state.teams} /> */}
-				<SortableList data={data} />
+				{conditionalTeamlist}
+				<SubmitButton />
 				<LoginButton />
 			</div>
 
