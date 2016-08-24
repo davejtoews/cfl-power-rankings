@@ -5,11 +5,29 @@ module.exports = React.createClass({
 		feathersApp: React.PropTypes.object,
 		login: React.PropTypes.bool
 	},
+	getInitialState: function() {
+		return {
+			user: this.props.userId,
+			ranks: []
+		};
+	},
+	componentWillReceiveProps: function () {
+		this.setState({
+			ranks: this.getRankList(this.props.teams)
+		});	
+	},
+	getRankList : function(teams) {
+		return teams.map(function(team) {
+			return team._id;
+		});
+	},
 	handleClick: function(evt) {
-		if (this.context.login) {
-			evt.preventDefault();
-			this.context.feathersApp.service('teams').find().then(function(result){
+		evt.preventDefault();
+		if (this.context.login && this.state.ranks.length) {
+			this.context.feathersApp.service('rankings').create(this.state).then(function(result){
 				console.log(result);
+			}).catch(function(error){
+				console.error('Error submitting rankings!', error);
 			});
 		}
 	},

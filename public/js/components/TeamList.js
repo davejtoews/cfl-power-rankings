@@ -45,7 +45,7 @@ module.exports = React.createClass({
 		  parent.insertBefore(placeholder, e.target.nextElementSibling);
 		}
 		else if(relY < height) {
-		  this.nodePlacement = "before"
+		  this.nodePlacement = "before";
 		  parent.insertBefore(placeholder, e.target);
 		}		
 	},

@@ -52,16 +52,16 @@ module.exports = React.createClass({
 		}
 	},
 	render: function () {
-		var conditionalTeamlist = ''
+		var conditionalTeamlist = '';
 		if(this.state.teams.length) {
 			conditionalTeamlist = <TeamList teams={this.state.teams} setTeams={this.setTeams} />
 		}
 		return(
 			<div>
+				<LoginButton />
 				<Info year={this.state.year} week={this.state.week} username={this.props.username} />
 				{conditionalTeamlist}
-				<SubmitButton />
-				<LoginButton />
+				<SubmitButton teams={this.state.teams} userId={this.props.userId} />
 			</div>
 
 		);

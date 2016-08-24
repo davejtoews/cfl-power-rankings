@@ -19443,10 +19443,10 @@ module.exports = _react2.default.createClass({
 		return _react2.default.createElement(
 			'div',
 			null,
+			_react2.default.createElement(_LoginButton2.default, null),
 			_react2.default.createElement(_Info2.default, { year: this.state.year, week: this.state.week, username: this.props.username }),
 			conditionalTeamlist,
-			_react2.default.createElement(_SubmitButton2.default, null),
-			_react2.default.createElement(_LoginButton2.default, null)
+			_react2.default.createElement(_SubmitButton2.default, { teams: this.state.teams, userId: this.props.userId })
 		);
 	}
 });
@@ -19543,11 +19543,29 @@ module.exports = _react2.default.createClass({
 		feathersApp: _react2.default.PropTypes.object,
 		login: _react2.default.PropTypes.bool
 	},
+	getInitialState: function getInitialState() {
+		return {
+			user: this.props.userId,
+			ranks: []
+		};
+	},
+	componentWillReceiveProps: function componentWillReceiveProps() {
+		this.setState({
+			ranks: this.getRankList(this.props.teams)
+		});
+	},
+	getRankList: function getRankList(teams) {
+		return teams.map(function (team) {
+			return team._id;
+		});
+	},
 	handleClick: function handleClick(evt) {
-		if (this.context.login) {
-			evt.preventDefault();
-			this.context.feathersApp.service('teams').find().then(function (result) {
+		evt.preventDefault();
+		if (this.context.login && this.state.ranks.length) {
+			this.context.feathersApp.service('rankings').create(this.state).then(function (result) {
 				console.log(result);
+			}).catch(function (error) {
+				console.error('Error submitting rankings!', error);
 			});
 		}
 	},
@@ -19665,7 +19683,7 @@ var feathersApp = feathers().configure(feathers.socketio(socket)).configure(feat
 // Authenticating using a token
 feathersApp.authenticate().then(function (result) {
 		console.log('Authenticated!', feathersApp.get('token'));
-		renderApp(true, result.data.reddit.name);
+		renderApp(true, result.data.reddit.name, result.data._id);
 }).catch(function (error) {
 		console.error('Error authenticating!', error);
 		renderApp(false, 'unknown');
@@ -19675,8 +19693,8 @@ feathersApp.authenticate().then(function (result) {
 var host = 'http://localhost:3030';
 var socket = io(host);
 
-function renderApp(login, username) {
-		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username }), document.getElementById('App'));
+function renderApp(login, username, userId) {
+		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId }), document.getElementById('App'));
 }
 
 },{"./components/App":166,"react":165,"react-dom":28}]},{},[171]);
