@@ -8,12 +8,14 @@ module.exports = React.createClass({
 	getInitialState: function() {
 		return {
 			user: this.props.userId,
-			ranks: []
+			ranks: [],
+			week: ''
 		};
 	},
 	componentWillReceiveProps: function () {
 		this.setState({
-			ranks: this.getRankList(this.props.teams)
+			ranks: this.getRankList(this.props.teams),
+			week: this.props.weekId
 		});	
 	},
 	getRankList : function(teams) {
@@ -23,7 +25,7 @@ module.exports = React.createClass({
 	},
 	handleClick: function(evt) {
 		evt.preventDefault();
-		if (this.context.login && this.state.ranks.length) {
+		if (this.context.login && this.state.ranks.length  && this.state.week) {
 			this.context.feathersApp.service('rankings').create(this.state).then(function(result){
 				console.log(result);
 			}).catch(function(error){

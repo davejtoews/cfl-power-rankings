@@ -3,6 +3,7 @@ import LoginButton from './LoginButton';
 import Info from './Info';
 import TeamList from './TeamList';
 import SubmitButton from './SubmitButton';
+import Results from './Results';
 
 module.exports = React.createClass({
 	childContextTypes: {
@@ -19,13 +20,17 @@ module.exports = React.createClass({
 		return {
 			year: '',
 			week: '',
+			weekId: '',
 			teams: []
 		}
 	},
 	getInfo: function(currentWeekId) {
 		var setInfo = this.setInfo;
+		this.setState({
+			weekId: currentWeekId
+		});	
 		this.props.feathersApp.service('weeks').get(currentWeekId, {query: { $populate: 'year' }}).then(function(result){
-			setInfo(result.name,result.year.year);
+			setInfo(result.name, result.year.year);
 		});
 	},
 	setInfo: function(week, year) {
@@ -43,6 +48,7 @@ module.exports = React.createClass({
 		if (this.props.login) {
 			var getInfo = this.getInfo;
 			var setTeams = this.setTeams;
+			var setState = this.setState;
 			this.props.feathersApp.service('configs').find({query: { name: 'current_week'}}).then(function(result){
 				getInfo(result.data[0].value);
 			});
@@ -61,7 +67,8 @@ module.exports = React.createClass({
 				<LoginButton />
 				<Info year={this.state.year} week={this.state.week} username={this.props.username} />
 				{conditionalTeamlist}
-				<SubmitButton teams={this.state.teams} userId={this.props.userId} />
+				<SubmitButton teams={this.state.teams} weekId={this.state.weekId} userId={this.props.userId} />
+				<Results weekId={this.state.weekId} />
 			</div>
 
 		);

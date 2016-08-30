@@ -19384,6 +19384,10 @@ var _SubmitButton = require('./SubmitButton');
 
 var _SubmitButton2 = _interopRequireDefault(_SubmitButton);
 
+var _Results = require('./Results');
+
+var _Results2 = _interopRequireDefault(_Results);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -19403,11 +19407,15 @@ module.exports = _react2.default.createClass({
 		return {
 			year: '',
 			week: '',
+			weekId: '',
 			teams: []
 		};
 	},
 	getInfo: function getInfo(currentWeekId) {
 		var setInfo = this.setInfo;
+		this.setState({
+			weekId: currentWeekId
+		});
 		this.props.feathersApp.service('weeks').get(currentWeekId, { query: { $populate: 'year' } }).then(function (result) {
 			setInfo(result.name, result.year.year);
 		});
@@ -19427,6 +19435,7 @@ module.exports = _react2.default.createClass({
 		if (this.props.login) {
 			var getInfo = this.getInfo;
 			var setTeams = this.setTeams;
+			var setState = this.setState;
 			this.props.feathersApp.service('configs').find({ query: { name: 'current_week' } }).then(function (result) {
 				getInfo(result.data[0].value);
 			});
@@ -19446,12 +19455,13 @@ module.exports = _react2.default.createClass({
 			_react2.default.createElement(_LoginButton2.default, null),
 			_react2.default.createElement(_Info2.default, { year: this.state.year, week: this.state.week, username: this.props.username }),
 			conditionalTeamlist,
-			_react2.default.createElement(_SubmitButton2.default, { teams: this.state.teams, userId: this.props.userId })
+			_react2.default.createElement(_SubmitButton2.default, { teams: this.state.teams, weekId: this.state.weekId, userId: this.props.userId }),
+			_react2.default.createElement(_Results2.default, { weekId: this.state.weekId })
 		);
 	}
 });
 
-},{"./Info":167,"./LoginButton":168,"./SubmitButton":169,"./TeamList":170,"react":165}],167:[function(require,module,exports){
+},{"./Info":167,"./LoginButton":168,"./Results":169,"./SubmitButton":171,"./TeamList":172,"react":165}],167:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19534,6 +19544,122 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _ResultsButton = require('./ResultsButton');
+
+var _ResultsButton2 = _interopRequireDefault(_ResultsButton);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return { results: [] };
+	},
+	getRankings: function getRankings() {
+		var tabulateRankings = this.tabulateRankings;
+		this.context.feathersApp.service('rankings').find({ query: { week: this.props.weekId, $populate: 'ranks' } }).then(function (result) {
+			tabulateRankings(result.data);
+		}).catch(function (error) {
+			console.error('Error getting this week\'s rankings!', error);
+		});
+	},
+	tabulateRankings: function tabulateRankings(rankings) {
+		var results = {};
+		rankings.forEach(function (ranking) {
+			ranking.ranks.forEach(function (rank, index) {
+				if (results[rank._id]) {
+					results[rank._id]['points'] = results[rank._id]['points'] + index;
+				} else {
+					results[rank._id] = {
+						'points': index,
+						'name': rank.name
+					};
+				}
+			});
+		});
+		var resultArray = Object.keys(results).map(function (key) {
+			return results[key];
+		});
+		var sortedResults = resultArray.sort(function (a, b) {
+			if (a.points < b.points) {
+				return -1;
+			}
+			if (a.points > b.points) {
+				return 1;
+			}
+			return 0;
+		});
+
+		this.setState({
+			results: sortedResults
+		});
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			'div',
+			null,
+			_react2.default.createElement(_ResultsButton2.default, { getRankings: this.getRankings }),
+			_react2.default.createElement(
+				'ul',
+				null,
+				this.state.results.map(function (result, key) {
+
+					return _react2.default.createElement(
+						'li',
+						{ key: key },
+						result.name,
+						':',
+						result.points
+					);
+				})
+			)
+		);
+	}
+});
+
+},{"./ResultsButton":170,"react":165}],170:[function(require,module,exports){
+"use strict";
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: "exports",
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	handleClick: function handleClick(evt) {
+		if (this.context.login) {
+			evt.preventDefault();
+			this.props.getRankings();
+		}
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			"a",
+			{ href: "#", className: "button", onClick: this.handleClick },
+			"Results"
+		);
+	}
+});
+
+},{"react":165}],171:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -19546,12 +19672,14 @@ module.exports = _react2.default.createClass({
 	getInitialState: function getInitialState() {
 		return {
 			user: this.props.userId,
-			ranks: []
+			ranks: [],
+			week: ''
 		};
 	},
 	componentWillReceiveProps: function componentWillReceiveProps() {
 		this.setState({
-			ranks: this.getRankList(this.props.teams)
+			ranks: this.getRankList(this.props.teams),
+			week: this.props.weekId
 		});
 	},
 	getRankList: function getRankList(teams) {
@@ -19561,7 +19689,7 @@ module.exports = _react2.default.createClass({
 	},
 	handleClick: function handleClick(evt) {
 		evt.preventDefault();
-		if (this.context.login && this.state.ranks.length) {
+		if (this.context.login && this.state.ranks.length && this.state.week) {
 			this.context.feathersApp.service('rankings').create(this.state).then(function (result) {
 				console.log(result);
 			}).catch(function (error) {
@@ -19578,7 +19706,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":165}],170:[function(require,module,exports){
+},{"react":165}],172:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -19658,7 +19786,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":165}],171:[function(require,module,exports){
+},{"react":165}],173:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19697,4 +19825,4 @@ function renderApp(login, username, userId) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId }), document.getElementById('App'));
 }
 
-},{"./components/App":166,"react":165,"react-dom":28}]},{},[171]);
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[173]);
