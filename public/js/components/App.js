@@ -58,17 +58,28 @@ module.exports = React.createClass({
 		}
 	},
 	render: function () {
-		var conditionalTeamlist = '';
-		if(this.state.teams.length) {
-			conditionalTeamlist = <TeamList teams={this.state.teams} setTeams={this.setTeams} />
-		}
 		return(
 			<div>
 				<LoginButton />
-				<Info year={this.state.year} week={this.state.week} username={this.props.username} />
-				{conditionalTeamlist}
-				<SubmitButton teams={this.state.teams} weekId={this.state.weekId} userId={this.props.userId} />
-				<Results weekId={this.state.weekId} />
+				<Info 
+					teams={this.state.teams} 
+					year={this.state.year} 
+					week={this.state.week} 
+					username={this.props.username} 
+					userId={this.props.userId} 
+				/>
+				<TeamList 
+					teams={this.state.teams} 
+					setTeams={this.setTeams} 
+				/>
+				<SubmitButton 
+					teams={this.state.teams}
+					weekId={this.state.weekId} 
+					userId={this.props.userId} 
+				/>
+				<Results 
+					weekId={this.state.weekId} 
+				/>
 			</div>
 
 		);

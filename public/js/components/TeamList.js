@@ -5,7 +5,12 @@ placeholder.className = "placeholder";
 
 module.exports = React.createClass({
 	getInitialState: function() {
-		return {teams: this.props.teams};
+		return {teams: []};
+	},
+	componentWillReceiveProps: function (nextProps) {
+		this.setState({
+			teams: nextProps.teams
+		});	
 	},
 	dragStart: function(e) {
 		this.dragged = e.currentTarget;

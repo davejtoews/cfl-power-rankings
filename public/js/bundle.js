@@ -19445,18 +19445,29 @@ module.exports = _react2.default.createClass({
 		}
 	},
 	render: function render() {
-		var conditionalTeamlist = '';
-		if (this.state.teams.length) {
-			conditionalTeamlist = _react2.default.createElement(_TeamList2.default, { teams: this.state.teams, setTeams: this.setTeams });
-		}
 		return _react2.default.createElement(
 			'div',
 			null,
 			_react2.default.createElement(_LoginButton2.default, null),
-			_react2.default.createElement(_Info2.default, { year: this.state.year, week: this.state.week, username: this.props.username }),
-			conditionalTeamlist,
-			_react2.default.createElement(_SubmitButton2.default, { teams: this.state.teams, weekId: this.state.weekId, userId: this.props.userId }),
-			_react2.default.createElement(_Results2.default, { weekId: this.state.weekId })
+			_react2.default.createElement(_Info2.default, {
+				teams: this.state.teams,
+				year: this.state.year,
+				week: this.state.week,
+				username: this.props.username,
+				userId: this.props.userId
+			}),
+			_react2.default.createElement(_TeamList2.default, {
+				teams: this.state.teams,
+				setTeams: this.setTeams
+			}),
+			_react2.default.createElement(_SubmitButton2.default, {
+				teams: this.state.teams,
+				weekId: this.state.weekId,
+				userId: this.props.userId
+			}),
+			_react2.default.createElement(_Results2.default, {
+				weekId: this.state.weekId
+			})
 		);
 	}
 });
@@ -19468,38 +19479,59 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _TeamSelect = require('./TeamSelect');
+
+var _TeamSelect2 = _interopRequireDefault(_TeamSelect);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
 	displayName: 'exports',
 
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return { teams: [] };
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		this.setState({
+			teams: nextProps.teams
+		});
+	},
 	render: function render() {
 		return _react2.default.createElement(
-			'ul',
+			'div',
 			null,
 			_react2.default.createElement(
-				'li',
+				'ul',
 				null,
-				'Year: ',
-				this.props.year
+				_react2.default.createElement(
+					'li',
+					null,
+					'Year: ',
+					this.props.year
+				),
+				_react2.default.createElement(
+					'li',
+					null,
+					'Week: ',
+					this.props.week
+				),
+				_react2.default.createElement(
+					'li',
+					null,
+					'User: ',
+					this.props.username
+				)
 			),
-			_react2.default.createElement(
-				'li',
-				null,
-				'Week: ',
-				this.props.week
-			),
-			_react2.default.createElement(
-				'li',
-				null,
-				'User: ',
-				this.props.username
-			)
+			_react2.default.createElement(_TeamSelect2.default, { teams: this.state.teams, userId: this.props.userId })
 		);
 	}
 });
 
-},{"react":165}],168:[function(require,module,exports){
+},{"./TeamSelect":173,"react":165}],168:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19515,9 +19547,9 @@ module.exports = _react2.default.createClass({
 		feathersApp: _react2.default.PropTypes.object,
 		login: _react2.default.PropTypes.bool
 	},
-	handleClick: function handleClick(evt) {
+	handleClick: function handleClick(e) {
 		if (this.context.login) {
-			evt.preventDefault();
+			e.preventDefault();
 			this.context.feathersApp.logout().then(function (result) {
 				console.log('Logged out!', result);
 				window.location.reload();
@@ -19638,9 +19670,9 @@ module.exports = _react2.default.createClass({
 		feathersApp: _react2.default.PropTypes.object,
 		login: _react2.default.PropTypes.bool
 	},
-	handleClick: function handleClick(evt) {
+	handleClick: function handleClick(e) {
 		if (this.context.login) {
-			evt.preventDefault();
+			e.preventDefault();
 			this.props.getRankings();
 		}
 	},
@@ -19676,10 +19708,10 @@ module.exports = _react2.default.createClass({
 			week: ''
 		};
 	},
-	componentWillReceiveProps: function componentWillReceiveProps() {
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 		this.setState({
-			ranks: this.getRankList(this.props.teams),
-			week: this.props.weekId
+			ranks: this.getRankList(nextProps.teams),
+			week: nextProps.weekId
 		});
 	},
 	getRankList: function getRankList(teams) {
@@ -19687,8 +19719,8 @@ module.exports = _react2.default.createClass({
 			return team._id;
 		});
 	},
-	handleClick: function handleClick(evt) {
-		evt.preventDefault();
+	handleClick: function handleClick(e) {
+		e.preventDefault();
 		if (this.context.login && this.state.ranks.length && this.state.week) {
 			this.context.feathersApp.service('rankings').create(this.state).then(function (result) {
 				console.log(result);
@@ -19722,7 +19754,12 @@ module.exports = _react2.default.createClass({
 	displayName: "exports",
 
 	getInitialState: function getInitialState() {
-		return { teams: this.props.teams };
+		return { teams: [] };
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		this.setState({
+			teams: nextProps.teams
+		});
 	},
 	dragStart: function dragStart(e) {
 		this.dragged = e.currentTarget;
@@ -19787,6 +19824,77 @@ module.exports = _react2.default.createClass({
 });
 
 },{"react":165}],173:[function(require,module,exports){
+"use strict";
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var placeholder = document.createElement("li");
+placeholder.className = "placeholder";
+
+module.exports = _react2.default.createClass({
+	displayName: "exports",
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return {
+			teams: [],
+			selectedTeam: ''
+		};
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		this.setState({
+			teams: nextProps.teams
+		});
+	},
+	handleChange: function handleChange(e) {
+		this.setState({
+			selectedTeam: e.target.value
+		});
+	},
+	setUserTeam: function setUserTeam(e) {
+		e.preventDefault();
+		console.log(this.props);
+		console.log([this.context.login, this.state.selectedTeam, this.props.userId]);
+		if (this.context.login && this.state.selectedTeam && this.props.userId) {
+			console.log('yes');
+			this.context.feathersApp.service('users').update(this.props.userId, { team: this.state.selectedTeam }).then(function (result) {
+				console.log(result);
+			}).catch(function (error) {
+				console.error('Error submitting rankings!', error);
+			});
+		}
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			"form",
+			{ onSubmit: this.setUserTeam },
+			_react2.default.createElement(
+				"select",
+				{ onChange: this.handleChange },
+				this.state.teams.map(function (team, i) {
+					return _react2.default.createElement(
+						"option",
+						{
+							key: i,
+							value: team._id
+						},
+						team.name
+					);
+				}, this)
+			),
+			_react2.default.createElement("input", { type: "submit" })
+		);
+	}
+});
+
+},{"react":165}],174:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19825,4 +19933,4 @@ function renderApp(login, username, userId) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId }), document.getElementById('App'));
 }
 
-},{"./components/App":166,"react":165,"react-dom":28}]},{},[173]);
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[174]);

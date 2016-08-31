@@ -5,9 +5,9 @@ module.exports = React.createClass({
 		feathersApp: React.PropTypes.object,
 		login: React.PropTypes.bool
 	},
-	handleClick: function(evt) {
+	handleClick: function(e) {
 		if (this.context.login) {
-			evt.preventDefault();
+			e.preventDefault();
 			this.props.getRankings();
 		}
 	},

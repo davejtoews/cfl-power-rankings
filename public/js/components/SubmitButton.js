@@ -12,10 +12,10 @@ module.exports = React.createClass({
 			week: ''
 		};
 	},
-	componentWillReceiveProps: function () {
+	componentWillReceiveProps: function (nextProps) {
 		this.setState({
-			ranks: this.getRankList(this.props.teams),
-			week: this.props.weekId
+			ranks: this.getRankList(nextProps.teams),
+			week: nextProps.weekId
 		});	
 	},
 	getRankList : function(teams) {
@@ -23,8 +23,8 @@ module.exports = React.createClass({
 			return team._id;
 		});
 	},
-	handleClick: function(evt) {
-		evt.preventDefault();
+	handleClick: function(e) {
+		e.preventDefault();
 		if (this.context.login && this.state.ranks.length  && this.state.week) {
 			this.context.feathersApp.service('rankings').create(this.state).then(function(result){
 				console.log(result);
