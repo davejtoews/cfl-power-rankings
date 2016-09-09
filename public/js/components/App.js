@@ -67,6 +67,7 @@ module.exports = React.createClass({
 					week={this.state.week} 
 					username={this.props.username} 
 					userId={this.props.userId} 
+					userTeam={this.props.userTeam}
 				/>
 				<TeamList 
 					teams={this.state.teams} 

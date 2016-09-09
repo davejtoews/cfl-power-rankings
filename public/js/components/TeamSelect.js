@@ -11,7 +11,7 @@ module.exports = React.createClass({
 	getInitialState: function() {
 		return {
 			teams: [],
-			selectedTeam: ''
+			selectedTeam: this.props.userTeam
 		};
 	},
 	componentWillReceiveProps: function (nextProps) {
@@ -26,12 +26,10 @@ module.exports = React.createClass({
 	},
 	setUserTeam: function (e) {
 		e.preventDefault();
-		console.log(this.props);
-		console.log([this.context.login, this.state.selectedTeam , this.props.userId]);
+		var teamSelect = this;
 		if (this.context.login && this.state.selectedTeam && this.props.userId) {
-			console.log('yes');
 			this.context.feathersApp.service('users')
-				.update(this.props.userId, {team: this.state.selectedTeam})
+				.patch(this.props.userId, {team: this.state.selectedTeam})
 				.then(function(result){
 					console.log(result);
 				}).catch(function(error){
@@ -42,7 +40,7 @@ module.exports = React.createClass({
 	render: function () {
 		return(
 			<form onSubmit={this.setUserTeam}>
-				<select onChange={this.handleChange}>
+				<select onChange={this.handleChange} value={this.state.selectedTeam}>
 			        {this.state.teams.map(function(team, i) {
 						return (
 							<option 

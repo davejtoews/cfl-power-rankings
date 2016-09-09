@@ -22,7 +22,7 @@ module.exports = React.createClass({
 					<li>Week: {this.props.week}</li>
 					<li>User: {this.props.username}</li>
 				</ul>
-				<TeamSelect teams={this.state.teams} userId={this.props.userId} />
+				<TeamSelect teams={this.state.teams} userId={this.props.userId} userTeam={this.props.userTeam} />
 			</div>
 
 		);
