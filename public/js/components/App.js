@@ -32,6 +32,10 @@ module.exports = React.createClass({
 		this.props.feathersApp.service('weeks').get(currentWeekId, {query: { $populate: 'year' }}).then(function(result){
 			setInfo(result.name, result.year.year);
 		});
+		this.props.feathersApp.service('rankings').find({query: {user: this.props.userId, week: currentWeekId}}).then(function(result) {
+			console.log(result);
+		});
+
 	},
 	setInfo: function(week, year) {
 		this.setState({
