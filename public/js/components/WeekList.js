@@ -17,12 +17,12 @@ module.exports = React.createClass({
 			this.context.feathersApp.service('weeks').find({query: { year: nextProps.yearId}}).then(function(result){
 				setWeeks(result.data);
 			}).catch(function(error){
-				console.error('Error adding week!', error);
+				console.error('Error getting weeks!', error);
 			});			
 		}
 	},
 	setWeeks: function(weeks) {
-		setState({
+		this.setState({
 			weeks: weeks
 		});
 	},
@@ -31,7 +31,7 @@ module.exports = React.createClass({
 			<ul>
 		        {this.state.weeks.map(function(week, i) {
 					return (
-						<WeekItem week={week} />
+						<WeekItem key={week._id} week={week} />
 					)
 				}, this)}
 			</ul>

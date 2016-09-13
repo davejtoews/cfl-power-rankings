@@ -20049,12 +20049,12 @@ module.exports = _react2.default.createClass({
 			this.context.feathersApp.service('weeks').find({ query: { year: nextProps.yearId } }).then(function (result) {
 				setWeeks(result.data);
 			}).catch(function (error) {
-				console.error('Error adding week!', error);
+				console.error('Error getting weeks!', error);
 			});
 		}
 	},
 	setWeeks: function setWeeks(weeks) {
-		setState({
+		this.setState({
 			weeks: weeks
 		});
 	},
@@ -20063,7 +20063,7 @@ module.exports = _react2.default.createClass({
 			'ul',
 			null,
 			this.state.weeks.map(function (week, i) {
-				return _react2.default.createElement(_WeekItem2.default, { week: week });
+				return _react2.default.createElement(_WeekItem2.default, { key: week._id, week: week });
 			}, this)
 		);
 	}
