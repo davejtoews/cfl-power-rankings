@@ -19405,28 +19405,41 @@ module.exports = _react2.default.createClass({
 	},
 	getInitialState: function getInitialState() {
 		return {
-			year: '',
 			week: '',
-			weekId: '',
-			teams: []
+			teams: [],
+			weekConfig: ''
 		};
 	},
 	getInfo: function getInfo(currentWeekId) {
-		var setInfo = this.setInfo;
-		this.setState({
-			weekId: currentWeekId
-		});
+		console.log(currentWeekId);
+		var setWeek = this.setWeek;
+		var setTeams = this.setTeams;
+		var getTeams = this.getTeams;
+
 		this.props.feathersApp.service('weeks').get(currentWeekId, { query: { $populate: 'year' } }).then(function (result) {
-			setInfo(result.name, result.year.year);
+			setWeek(result);
 		});
-		this.props.feathersApp.service('rankings').find({ query: { user: this.props.userId, week: currentWeekId } }).then(function (result) {
-			console.log(result);
+		this.props.feathersApp.service('rankings').find({ query: { user: this.props.userId, week: currentWeekId, $populate: 'ranks' } }).then(function (result) {
+			if (result.total) {
+				setTeams(result.data[0].ranks);
+			} else {
+				getTeams();
+			}
 		});
 	},
-	setInfo: function setInfo(week, year) {
+	getTeams: function getTeams() {
+		var setTeams = this.setTeams;
+		this.props.feathersApp.service('teams').find().then(function (result) {
+			setTeams(result.data);
+		});
+	},
+	setWeek: function setWeek(week) {
+		if (typeof week.year == "string" && week.year == this.state.week.year._id) {
+			week.year = this.state.week.year;
+		}
+		// Another check will be necessary once year update is set up
 		this.setState({
-			week: week,
-			year: year
+			week: week
 		});
 	},
 	setTeams: function setTeams(teams) {
@@ -19434,16 +19447,18 @@ module.exports = _react2.default.createClass({
 			teams: teams
 		});
 	},
+	setWeekConfig: function setWeekConfig(weekConfig) {
+		this.setState({
+			weekConfig: weekConfig
+		});
+	},
 	componentDidMount: function componentDidMount() {
 		if (this.props.login) {
 			var getInfo = this.getInfo;
-			var setTeams = this.setTeams;
-			var setState = this.setState;
+			var setWeekConfig = this.setWeekConfig;
 			this.props.feathersApp.service('configs').find({ query: { name: 'current_week' } }).then(function (result) {
+				setWeekConfig(result.data[0]._id);
 				getInfo(result.data[0].value);
-			});
-			this.props.feathersApp.service('teams').find().then(function (result) {
-				setTeams(result.data);
 			});
 		}
 	},
@@ -19454,11 +19469,12 @@ module.exports = _react2.default.createClass({
 			_react2.default.createElement(_LoginButton2.default, null),
 			_react2.default.createElement(_Info2.default, {
 				teams: this.state.teams,
-				year: this.state.year,
 				week: this.state.week,
 				username: this.props.username,
 				userId: this.props.userId,
-				userTeam: this.props.userTeam
+				userTeam: this.props.userTeam,
+				setWeek: this.setWeek,
+				weekConfig: this.state.weekConfig
 			}),
 			_react2.default.createElement(_TeamList2.default, {
 				teams: this.state.teams,
@@ -19466,17 +19482,17 @@ module.exports = _react2.default.createClass({
 			}),
 			_react2.default.createElement(_SubmitButton2.default, {
 				teams: this.state.teams,
-				weekId: this.state.weekId,
+				weekId: this.state.week._id,
 				userId: this.props.userId
 			}),
 			_react2.default.createElement(_Results2.default, {
-				weekId: this.state.weekId
+				weekId: this.state.week._id
 			})
 		);
 	}
 });
 
-},{"./Info":167,"./LoginButton":168,"./Results":169,"./SubmitButton":171,"./TeamList":172,"react":165}],167:[function(require,module,exports){
+},{"./Info":167,"./LoginButton":168,"./Results":170,"./SubmitButton":172,"./TeamList":173,"react":165}],167:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19486,6 +19502,10 @@ var _react2 = _interopRequireDefault(_react);
 var _TeamSelect = require('./TeamSelect');
 
 var _TeamSelect2 = _interopRequireDefault(_TeamSelect);
+
+var _NewWeek = require('./NewWeek');
+
+var _NewWeek2 = _interopRequireDefault(_NewWeek);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19497,7 +19517,9 @@ module.exports = _react2.default.createClass({
 		login: _react2.default.PropTypes.bool
 	},
 	getInitialState: function getInitialState() {
-		return { teams: [] };
+		return {
+			teams: []
+		};
 	},
 	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 		this.setState({
@@ -19505,6 +19527,7 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	render: function render() {
+		var year = this.props.week ? this.props.week.year.year : '';
 		return _react2.default.createElement(
 			'div',
 			null,
@@ -19515,13 +19538,13 @@ module.exports = _react2.default.createClass({
 					'li',
 					null,
 					'Year: ',
-					this.props.year
+					year
 				),
 				_react2.default.createElement(
 					'li',
 					null,
 					'Week: ',
-					this.props.week
+					this.props.week.name
 				),
 				_react2.default.createElement(
 					'li',
@@ -19530,12 +19553,21 @@ module.exports = _react2.default.createClass({
 					this.props.username
 				)
 			),
-			_react2.default.createElement(_TeamSelect2.default, { teams: this.state.teams, userId: this.props.userId, userTeam: this.props.userTeam })
+			_react2.default.createElement(_NewWeek2.default, {
+				currentWeek: this.props.week,
+				setWeek: this.props.setWeek,
+				weekConfig: this.props.weekConfig
+			}),
+			_react2.default.createElement(_TeamSelect2.default, {
+				teams: this.state.teams,
+				userId: this.props.userId,
+				userTeam: this.props.userTeam
+			})
 		);
 	}
 });
 
-},{"./TeamSelect":173,"react":165}],168:[function(require,module,exports){
+},{"./NewWeek":169,"./TeamSelect":174,"react":165}],168:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19574,6 +19606,65 @@ module.exports = _react2.default.createClass({
 });
 
 },{"react":165}],169:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return { newWeekName: '' };
+	},
+	handleChange: function handleChange(e) {
+		this.setState({
+			newWeekName: e.target.value
+		});
+	},
+	handleSubmit: function handleSubmit(e) {
+		e.preventDefault();
+		var updateCurrentWeek = this.updateCurrentWeek;
+		var newWeek = {
+			name: this.state.newWeekName,
+			year: this.props.currentWeek.year
+		};
+		this.context.feathersApp.service('weeks').create(newWeek).then(function (result) {
+			updateCurrentWeek(result);
+		}).catch(function (error) {
+			console.error('Error adding week!', error);
+		});
+	},
+	updateCurrentWeek: function updateCurrentWeek(week) {
+		var setWeek = this.props.setWeek;
+		this.context.feathersApp.service('configs').patch(this.props.weekConfig, { value: week._id }).then(function (result) {
+			setWeek(week);
+		}).catch(function (error) {
+			console.error('Error updating current week!', error);
+		});
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			'form',
+			{ onSubmit: this.handleSubmit },
+			_react2.default.createElement('input', { type: 'text', onChange: this.handleChange, value: this.state.newWeekName }),
+			_react2.default.createElement(
+				'button',
+				{ type: 'submit' },
+				'New Week'
+			)
+		);
+	}
+});
+
+},{"react":165}],170:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19662,7 +19753,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./ResultsButton":170,"react":165}],170:[function(require,module,exports){
+},{"./ResultsButton":171,"react":165}],171:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -19693,7 +19784,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":165}],171:[function(require,module,exports){
+},{"react":165}],172:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19746,7 +19837,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":165}],172:[function(require,module,exports){
+},{"react":165}],173:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -19831,7 +19922,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":165}],173:[function(require,module,exports){
+},{"react":165}],174:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -19900,7 +19991,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":165}],174:[function(require,module,exports){
+},{"react":165}],175:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19939,4 +20030,4 @@ function renderApp(login, username, userId, userTeam) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam }), document.getElementById('App'));
 }
 
-},{"./components/App":166,"react":165,"react-dom":28}]},{},[174]);
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[175]);
