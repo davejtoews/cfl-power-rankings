@@ -1,6 +1,7 @@
 import React from 'react';
 import TeamSelect from './TeamSelect';
 import NewWeek from './NewWeek';
+import WeekList from './WeekList';
 
 module.exports = React.createClass({
 	contextTypes: {
@@ -18,7 +19,8 @@ module.exports = React.createClass({
 		});	
 	},
 	render: function () {
-		var year = (this.props.week) ? this.props.week.year.year : ''
+		var year = (this.props.week) ? this.props.week.year.year : '';
+		var yearId = (this.props.week) ? this.props.week.year._id : false;
 		return(
 			<div>
 				<ul>
@@ -26,15 +28,16 @@ module.exports = React.createClass({
 					<li>Week: {this.props.week.name}</li>
 					<li>User: {this.props.username}</li>
 				</ul>
-				<NewWeek
-					currentWeek={this.props.week}
-					setWeek={this.props.setWeek}
-					weekConfig={this.props.weekConfig}
-				/>
 				<TeamSelect 
 					teams={this.state.teams} 
 					userId={this.props.userId} 
 					userTeam={this.props.userTeam}
+				/>
+				<WeekList yearId={yearId}/>
+				<NewWeek
+					currentWeek={this.props.week}
+					setWeek={this.props.setWeek}
+					weekConfig={this.props.weekConfig}
 				/>
 			</div>
 

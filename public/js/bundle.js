@@ -19507,6 +19507,10 @@ var _NewWeek = require('./NewWeek');
 
 var _NewWeek2 = _interopRequireDefault(_NewWeek);
 
+var _WeekList = require('./WeekList');
+
+var _WeekList2 = _interopRequireDefault(_WeekList);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -19528,6 +19532,7 @@ module.exports = _react2.default.createClass({
 	},
 	render: function render() {
 		var year = this.props.week ? this.props.week.year.year : '';
+		var yearId = this.props.week ? this.props.week.year._id : false;
 		return _react2.default.createElement(
 			'div',
 			null,
@@ -19553,21 +19558,22 @@ module.exports = _react2.default.createClass({
 					this.props.username
 				)
 			),
-			_react2.default.createElement(_NewWeek2.default, {
-				currentWeek: this.props.week,
-				setWeek: this.props.setWeek,
-				weekConfig: this.props.weekConfig
-			}),
 			_react2.default.createElement(_TeamSelect2.default, {
 				teams: this.state.teams,
 				userId: this.props.userId,
 				userTeam: this.props.userTeam
+			}),
+			_react2.default.createElement(_WeekList2.default, { yearId: yearId }),
+			_react2.default.createElement(_NewWeek2.default, {
+				currentWeek: this.props.week,
+				setWeek: this.props.setWeek,
+				weekConfig: this.props.weekConfig
 			})
 		);
 	}
 });
 
-},{"./NewWeek":169,"./TeamSelect":174,"react":165}],168:[function(require,module,exports){
+},{"./NewWeek":169,"./TeamSelect":174,"./WeekList":176,"react":165}],168:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19998,6 +20004,78 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	render: function render() {
+		return _react2.default.createElement('li', null);
+	}
+});
+
+},{"react":165}],176:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _WeekItem = require('./WeekItem');
+
+var _WeekItem2 = _interopRequireDefault(_WeekItem);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return {
+			weeks: []
+		};
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		var setWeeks = this.setWeeks;
+		if (nextProps.yearId) {
+			this.context.feathersApp.service('weeks').find({ query: { year: nextProps.yearId } }).then(function (result) {
+				setWeeks(result.data);
+			}).catch(function (error) {
+				console.error('Error adding week!', error);
+			});
+		}
+	},
+	setWeeks: function setWeeks(weeks) {
+		setState({
+			weeks: weeks
+		});
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			'ul',
+			null,
+			this.state.weeks.map(function (week, i) {
+				return _react2.default.createElement(_WeekItem2.default, { week: week });
+			}, this)
+		);
+	}
+});
+
+},{"./WeekItem":175,"react":165}],177:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
 var _reactDom = require('react-dom');
 
 var _App = require('./components/App');
@@ -20030,4 +20108,4 @@ function renderApp(login, username, userId, userTeam) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam }), document.getElementById('App'));
 }
 
-},{"./components/App":166,"react":165,"react-dom":28}]},{},[175]);
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[177]);
