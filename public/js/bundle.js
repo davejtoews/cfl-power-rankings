@@ -19380,6 +19380,14 @@ var _TeamList = require('./TeamList');
 
 var _TeamList2 = _interopRequireDefault(_TeamList);
 
+var _SubmitButton = require('./SubmitButton');
+
+var _SubmitButton2 = _interopRequireDefault(_SubmitButton);
+
+var _Results = require('./Results');
+
+var _Results2 = _interopRequireDefault(_Results);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -19397,21 +19405,41 @@ module.exports = _react2.default.createClass({
 	},
 	getInitialState: function getInitialState() {
 		return {
-			year: '',
 			week: '',
-			teams: []
+			teams: [],
+			weekConfig: ''
 		};
 	},
 	getInfo: function getInfo(currentWeekId) {
-		var setInfo = this.setInfo;
+		console.log(currentWeekId);
+		var setWeek = this.setWeek;
+		var setTeams = this.setTeams;
+		var getTeams = this.getTeams;
+
 		this.props.feathersApp.service('weeks').get(currentWeekId, { query: { $populate: 'year' } }).then(function (result) {
-			setInfo(result.name, result.year.year);
+			setWeek(result);
+		});
+		this.props.feathersApp.service('rankings').find({ query: { user: this.props.userId, week: currentWeekId, $populate: 'ranks' } }).then(function (result) {
+			if (result.total) {
+				setTeams(result.data[0].ranks);
+			} else {
+				getTeams();
+			}
 		});
 	},
-	setInfo: function setInfo(week, year) {
+	getTeams: function getTeams() {
+		var setTeams = this.setTeams;
+		this.props.feathersApp.service('teams').find().then(function (result) {
+			setTeams(result.data);
+		});
+	},
+	setWeek: function setWeek(week) {
+		if (typeof week.year == "string" && week.year == this.state.week.year._id) {
+			week.year = this.state.week.year;
+		}
+		// Another check will be necessary once year update is set up
 		this.setState({
-			week: week,
-			year: year
+			week: week
 		});
 	},
 	setTeams: function setTeams(teams) {
@@ -19419,15 +19447,18 @@ module.exports = _react2.default.createClass({
 			teams: teams
 		});
 	},
+	setWeekConfig: function setWeekConfig(weekConfig) {
+		this.setState({
+			weekConfig: weekConfig
+		});
+	},
 	componentDidMount: function componentDidMount() {
 		if (this.props.login) {
 			var getInfo = this.getInfo;
-			var setTeams = this.setTeams;
+			var setWeekConfig = this.setWeekConfig;
 			this.props.feathersApp.service('configs').find({ query: { name: 'current_week' } }).then(function (result) {
+				setWeekConfig(result.data[0]._id);
 				getInfo(result.data[0].value);
-			});
-			this.props.feathersApp.service('teams').find().then(function (result) {
-				setTeams(result.data);
 			});
 		}
 	},
@@ -19435,51 +19466,114 @@ module.exports = _react2.default.createClass({
 		return _react2.default.createElement(
 			'div',
 			null,
-			_react2.default.createElement(_Info2.default, { year: this.state.year, week: this.state.week, username: this.props.username }),
-			_react2.default.createElement(_LoginButton2.default, null)
+			_react2.default.createElement(_LoginButton2.default, null),
+			_react2.default.createElement(_Info2.default, {
+				teams: this.state.teams,
+				week: this.state.week,
+				username: this.props.username,
+				userId: this.props.userId,
+				userTeam: this.props.userTeam,
+				setWeek: this.setWeek,
+				weekConfig: this.state.weekConfig
+			}),
+			_react2.default.createElement(_TeamList2.default, {
+				teams: this.state.teams,
+				setTeams: this.setTeams
+			}),
+			_react2.default.createElement(_SubmitButton2.default, {
+				teams: this.state.teams,
+				weekId: this.state.week._id,
+				userId: this.props.userId
+			}),
+			_react2.default.createElement(_Results2.default, {
+				weekId: this.state.week._id
+			})
 		);
 	}
 });
 
-},{"./Info":167,"./LoginButton":168,"./TeamList":169,"react":165}],167:[function(require,module,exports){
+},{"./Info":167,"./LoginButton":168,"./Results":170,"./SubmitButton":172,"./TeamList":173,"react":165}],167:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _TeamSelect = require('./TeamSelect');
+
+var _TeamSelect2 = _interopRequireDefault(_TeamSelect);
+
+var _NewWeek = require('./NewWeek');
+
+var _NewWeek2 = _interopRequireDefault(_NewWeek);
+
+var _WeekList = require('./WeekList');
+
+var _WeekList2 = _interopRequireDefault(_WeekList);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
 	displayName: 'exports',
 
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return {
+			teams: []
+		};
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		this.setState({
+			teams: nextProps.teams
+		});
+	},
 	render: function render() {
+		var year = this.props.week ? this.props.week.year.year : '';
+		var yearId = this.props.week ? this.props.week.year._id : false;
 		return _react2.default.createElement(
-			'ul',
+			'div',
 			null,
 			_react2.default.createElement(
-				'li',
+				'ul',
 				null,
-				'Year: ',
-				this.props.year
+				_react2.default.createElement(
+					'li',
+					null,
+					'Year: ',
+					year
+				),
+				_react2.default.createElement(
+					'li',
+					null,
+					'Week: ',
+					this.props.week.name
+				),
+				_react2.default.createElement(
+					'li',
+					null,
+					'User: ',
+					this.props.username
+				)
 			),
-			_react2.default.createElement(
-				'li',
-				null,
-				'Week: ',
-				this.props.week
-			),
-			_react2.default.createElement(
-				'li',
-				null,
-				'User: ',
-				this.props.username
-			)
+			_react2.default.createElement(_TeamSelect2.default, {
+				teams: this.state.teams,
+				userId: this.props.userId,
+				userTeam: this.props.userTeam
+			}),
+			_react2.default.createElement(_WeekList2.default, { yearId: yearId }),
+			_react2.default.createElement(_NewWeek2.default, {
+				currentWeek: this.props.week,
+				setWeek: this.props.setWeek,
+				weekConfig: this.props.weekConfig
+			})
 		);
 	}
 });
 
-},{"react":165}],168:[function(require,module,exports){
+},{"./NewWeek":169,"./TeamSelect":174,"./WeekList":176,"react":165}],168:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19495,9 +19589,9 @@ module.exports = _react2.default.createClass({
 		feathersApp: _react2.default.PropTypes.object,
 		login: _react2.default.PropTypes.bool
 	},
-	handleClick: function handleClick(evt) {
+	handleClick: function handleClick(e) {
 		if (this.context.login) {
-			evt.preventDefault();
+			e.preventDefault();
 			this.context.feathersApp.logout().then(function (result) {
 				console.log('Logged out!', result);
 				window.location.reload();
@@ -19518,9 +19612,464 @@ module.exports = _react2.default.createClass({
 });
 
 },{"react":165}],169:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return { newWeekName: '' };
+	},
+	handleChange: function handleChange(e) {
+		this.setState({
+			newWeekName: e.target.value
+		});
+	},
+	handleSubmit: function handleSubmit(e) {
+		e.preventDefault();
+		var updateCurrentWeek = this.updateCurrentWeek;
+		var newWeek = {
+			name: this.state.newWeekName,
+			year: this.props.currentWeek.year
+		};
+		this.context.feathersApp.service('weeks').create(newWeek).then(function (result) {
+			updateCurrentWeek(result);
+		}).catch(function (error) {
+			console.error('Error adding week!', error);
+		});
+	},
+	updateCurrentWeek: function updateCurrentWeek(week) {
+		var setWeek = this.props.setWeek;
+		this.context.feathersApp.service('configs').patch(this.props.weekConfig, { value: week._id }).then(function (result) {
+			setWeek(week);
+		}).catch(function (error) {
+			console.error('Error updating current week!', error);
+		});
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			'form',
+			{ onSubmit: this.handleSubmit },
+			_react2.default.createElement('input', { type: 'text', onChange: this.handleChange, value: this.state.newWeekName }),
+			_react2.default.createElement(
+				'button',
+				{ type: 'submit' },
+				'New Week'
+			)
+		);
+	}
+});
+
+},{"react":165}],170:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _ResultsButton = require('./ResultsButton');
+
+var _ResultsButton2 = _interopRequireDefault(_ResultsButton);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return { results: [] };
+	},
+	getRankings: function getRankings() {
+		var tabulateRankings = this.tabulateRankings;
+		this.context.feathersApp.service('rankings').find({ query: { week: this.props.weekId, $populate: ['ranks', 'user'] } }).then(function (result) {
+			tabulateRankings(result.data);
+		}).catch(function (error) {
+			console.error('Error getting this week\'s rankings!', error);
+		});
+	},
+	tabulateRankings: function tabulateRankings(rankings) {
+		var results = {};
+		var teams = [];
+		rankings.forEach(function (ranking) {
+			if (!teams.includes(ranking.user.team)) {
+				teams.push(ranking.user.team);
+				ranking.ranks.forEach(function (rank, index) {
+					if (results[rank._id]) {
+						results[rank._id]['points'] = results[rank._id]['points'] + index;
+					} else {
+						results[rank._id] = {
+							'points': index,
+							'name': rank.name
+						};
+					}
+				});
+			}
+		});
+		var resultArray = Object.keys(results).map(function (key) {
+			return results[key];
+		});
+		var sortedResults = resultArray.sort(function (a, b) {
+			if (a.points < b.points) {
+				return -1;
+			}
+			if (a.points > b.points) {
+				return 1;
+			}
+			return 0;
+		});
+
+		this.setState({
+			results: sortedResults
+		});
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			'div',
+			null,
+			_react2.default.createElement(_ResultsButton2.default, { getRankings: this.getRankings }),
+			_react2.default.createElement(
+				'ul',
+				null,
+				this.state.results.map(function (result, key) {
+
+					return _react2.default.createElement(
+						'li',
+						{ key: key },
+						result.name,
+						':',
+						result.points
+					);
+				})
+			)
+		);
+	}
+});
+
+},{"./ResultsButton":171,"react":165}],171:[function(require,module,exports){
 "use strict";
 
-},{}],170:[function(require,module,exports){
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: "exports",
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	handleClick: function handleClick(e) {
+		if (this.context.login) {
+			e.preventDefault();
+			this.props.getRankings();
+		}
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			"a",
+			{ href: "#", className: "button", onClick: this.handleClick },
+			"Results"
+		);
+	}
+});
+
+},{"react":165}],172:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return {
+			user: this.props.userId,
+			ranks: [],
+			week: ''
+		};
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		this.setState({
+			ranks: this.getRankList(nextProps.teams),
+			week: nextProps.weekId
+		});
+	},
+	getRankList: function getRankList(teams) {
+		return teams.map(function (team) {
+			return team._id;
+		});
+	},
+	handleClick: function handleClick(e) {
+		e.preventDefault();
+		if (this.context.login && this.state.ranks.length && this.state.week) {
+			this.context.feathersApp.service('rankings').create(this.state).then(function (result) {
+				console.log(result);
+			}).catch(function (error) {
+				console.error('Error submitting rankings!', error);
+			});
+		}
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			'a',
+			{ href: '#', className: 'button', onClick: this.handleClick },
+			'Submit'
+		);
+	}
+});
+
+},{"react":165}],173:[function(require,module,exports){
+"use strict";
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var placeholder = document.createElement("li");
+placeholder.className = "placeholder";
+
+module.exports = _react2.default.createClass({
+	displayName: "exports",
+
+	getInitialState: function getInitialState() {
+		return { teams: [] };
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		this.setState({
+			teams: nextProps.teams
+		});
+	},
+	dragStart: function dragStart(e) {
+		this.dragged = e.currentTarget;
+		e.dataTransfer.effectAllowed = 'move';
+
+		// Firefox requires calling dataTransfer.setData
+		// for the drag to properly work
+		e.dataTransfer.setData("text/html", e.currentTarget);
+	},
+	dragEnd: function dragEnd(e) {
+
+		this.dragged.style.display = "block";
+		this.dragged.parentNode.removeChild(placeholder);
+
+		// Update state
+		var teams = this.state.teams;
+		var from = Number(this.dragged.dataset.id);
+		var to = Number(this.over.dataset.id);
+		if (from < to) to--;
+		if (this.nodePlacement == "after") to++;
+		teams.splice(to, 0, teams.splice(from, 1)[0]);
+		this.props.setTeams(teams);
+	},
+	dragOver: function dragOver(e) {
+		e.preventDefault();
+		this.dragged.style.display = "none";
+		if (e.target.className == "placeholder") return;
+		this.over = e.target;
+		e.target.parentNode.insertBefore(placeholder, e.target);
+
+		var relY = e.clientY - this.over.offsetTop;
+		var height = this.over.offsetHeight / 2;
+		var parent = e.target.parentNode;
+
+		if (relY > height) {
+			this.nodePlacement = "after";
+			parent.insertBefore(placeholder, e.target.nextElementSibling);
+		} else if (relY < height) {
+			this.nodePlacement = "before";
+			parent.insertBefore(placeholder, e.target);
+		}
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			"ul",
+			{ onDragOver: this.dragOver },
+			this.state.teams.map(function (team, i) {
+				return _react2.default.createElement(
+					"li",
+					{
+						key: i,
+						"data-id": i,
+						draggable: "true",
+						onDragEnd: this.dragEnd,
+						onDragStart: this.dragStart
+					},
+					team.name
+				);
+			}, this)
+		);
+	}
+});
+
+},{"react":165}],174:[function(require,module,exports){
+"use strict";
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var placeholder = document.createElement("li");
+placeholder.className = "placeholder";
+
+module.exports = _react2.default.createClass({
+	displayName: "exports",
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return {
+			teams: [],
+			selectedTeam: this.props.userTeam
+		};
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		this.setState({
+			teams: nextProps.teams
+		});
+	},
+	handleChange: function handleChange(e) {
+		this.setState({
+			selectedTeam: e.target.value
+		});
+	},
+	setUserTeam: function setUserTeam(e) {
+		e.preventDefault();
+		var teamSelect = this;
+		if (this.context.login && this.state.selectedTeam && this.props.userId) {
+			this.context.feathersApp.service('users').patch(this.props.userId, { team: this.state.selectedTeam }).then(function (result) {
+				console.log(result);
+			}).catch(function (error) {
+				console.error('Error submitting rankings!', error);
+			});
+		}
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			"form",
+			{ onSubmit: this.setUserTeam },
+			_react2.default.createElement(
+				"select",
+				{ onChange: this.handleChange, value: this.state.selectedTeam },
+				this.state.teams.map(function (team, i) {
+					return _react2.default.createElement(
+						"option",
+						{
+							key: i,
+							value: team._id
+						},
+						team.name
+					);
+				}, this)
+			),
+			_react2.default.createElement("input", { type: "submit" })
+		);
+	}
+});
+
+},{"react":165}],175:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	render: function render() {
+		return _react2.default.createElement('li', null);
+	}
+});
+
+},{"react":165}],176:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _WeekItem = require('./WeekItem');
+
+var _WeekItem2 = _interopRequireDefault(_WeekItem);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return {
+			weeks: []
+		};
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		var setWeeks = this.setWeeks;
+		if (nextProps.yearId) {
+			this.context.feathersApp.service('weeks').find({ query: { year: nextProps.yearId } }).then(function (result) {
+				setWeeks(result.data);
+			}).catch(function (error) {
+				console.error('Error adding week!', error);
+			});
+		}
+	},
+	setWeeks: function setWeeks(weeks) {
+		setState({
+			weeks: weeks
+		});
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			'ul',
+			null,
+			this.state.weeks.map(function (week, i) {
+				return _react2.default.createElement(_WeekItem2.default, { week: week });
+			}, this)
+		);
+	}
+});
+
+},{"./WeekItem":175,"react":165}],177:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19545,7 +20094,7 @@ var feathersApp = feathers().configure(feathers.socketio(socket)).configure(feat
 // Authenticating using a token
 feathersApp.authenticate().then(function (result) {
 		console.log('Authenticated!', feathersApp.get('token'));
-		renderApp(true, result.data.reddit.name);
+		renderApp(true, result.data.reddit.name, result.data._id, result.data.team);
 }).catch(function (error) {
 		console.error('Error authenticating!', error);
 		renderApp(false, 'unknown');
@@ -19555,8 +20104,8 @@ feathersApp.authenticate().then(function (result) {
 var host = 'http://localhost:3030';
 var socket = io(host);
 
-function renderApp(login, username) {
-		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username }), document.getElementById('App'));
+function renderApp(login, username, userId, userTeam) {
+		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam }), document.getElementById('App'));
 }
 
-},{"./components/App":166,"react":165,"react-dom":28}]},{},[170]);
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[177]);

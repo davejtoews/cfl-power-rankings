@@ -15,7 +15,7 @@ var feathersApp = feathers()
 // Authenticating using a token
 feathersApp.authenticate().then(function(result){
   console.log('Authenticated!', feathersApp.get('token'));
-  renderApp(true, result.data.reddit.name);
+  renderApp(true, result.data.reddit.name, result.data._id, result.data.team);
 }).catch(function(error){
   console.error('Error authenticating!', error);
   renderApp(false,'unknown');
@@ -25,9 +25,9 @@ feathersApp.authenticate().then(function(result){
 var host = 'http://localhost:3030';
 var socket = io(host);
 
-function renderApp(login, username ) {
+function renderApp(login, username, userId, userTeam ) {
 	render(
-		<App feathersApp={ feathersApp } login={ login } username= { username } />
+		<App feathersApp={ feathersApp } login={ login } username= { username } userId={userId} userTeam={userTeam} />
 		,
 	  	document.getElementById('App')
 	);	
