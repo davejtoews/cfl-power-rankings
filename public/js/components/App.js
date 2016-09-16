@@ -24,7 +24,6 @@ module.exports = React.createClass({
 		}
 	},
 	getInfo: function(currentWeekId) {
-		console.log(currentWeekId);
 		var setWeek = this.setWeek;
 		var setTeams = this.setTeams;
 		var getTeams = this.getTeams;

@@ -7,7 +7,11 @@ module.exports = React.createClass({
 		login: React.PropTypes.bool
 	},
 	getInitialState: function() {
-		return {results: []}
+		return {
+			results: [],
+			markDown: '',
+			records: {}
+		}
 	},
 	getRankings: function () {
 		var tabulateRankings = this.tabulateRankings;
@@ -17,6 +21,18 @@ module.exports = React.createClass({
 				console.error('Error getting this week\'s rankings!', error);
 		});
 	},
+	getStandings: function() {
+		var setRecords = this.setRecords;
+		this.context.feathersApp.io.on('cflStandings', function(records){
+			setRecords(records);
+		});
+		this.context.feathersApp.io.emit('cflStandings');
+	},
+	setRecords: function(records) {
+		this.setState({
+			records: records
+		});
+	},
 	tabulateRankings: function(rankings) {
 		var results = {};
 		var teams = [];
@@ -24,11 +40,12 @@ module.exports = React.createClass({
 			if (!teams.includes(ranking.user.team)) {
 				teams.push(ranking.user.team);
 				ranking.ranks.forEach(function(rank, index) {
+					var rating = index + 1;
 					if (results[rank._id]) {
-						results[rank._id]['points'] = results[rank._id]['points'] + index;
+						results[rank._id]['points'] = results[rank._id]['points'] + rating;
 					} else {
 						results[rank._id] = {
-							'points' : index,
+							'points' : rating,
 							'name' : rank.name
 						}					
 					}
@@ -48,8 +65,21 @@ module.exports = React.createClass({
 		});
 
 		this.setState({
-			results: sortedResults
+			results: sortedResults,
+			markDown: this.createMarkDown(sortedResults)
 		});
+		this.getStandings();
+	},
+	createMarkDown: function(results) {
+		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
+			tableHead += "-:|-|-|-|-|-|-\n";
+		var tableRows = results.map(function(result, key) {
+			return (key + 1) + "||" + result.name + "|||"+ result.points +"|" + "\n";
+		});
+		var tableBody = tableRows.join('');
+		
+		console.log(tableHead + tableBody);
+		return tableHead + tableBody;
 	},
 	render: function () {
 		return(
@@ -57,12 +87,12 @@ module.exports = React.createClass({
 				<ResultsButton getRankings={this.getRankings} />
 				<ul>
 					{this.state.results.map(function(result, key){
-
 						return (
 							<li key={key} >{result.name}:{result.points}</li>
 						);
 					})}
 				</ul>
+				<textarea rows="15" cols="75" value={this.state.markDown} />
 			</div>
 		);
 	}

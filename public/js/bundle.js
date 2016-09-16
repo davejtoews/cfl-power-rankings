@@ -19411,7 +19411,6 @@ module.exports = _react2.default.createClass({
 		};
 	},
 	getInfo: function getInfo(currentWeekId) {
-		console.log(currentWeekId);
 		var setWeek = this.setWeek;
 		var setTeams = this.setTeams;
 		var getTeams = this.getTeams;
@@ -19691,7 +19690,11 @@ module.exports = _react2.default.createClass({
 		login: _react2.default.PropTypes.bool
 	},
 	getInitialState: function getInitialState() {
-		return { results: [] };
+		return {
+			results: [],
+			markDown: '',
+			records: {}
+		};
 	},
 	getRankings: function getRankings() {
 		var tabulateRankings = this.tabulateRankings;
@@ -19701,6 +19704,18 @@ module.exports = _react2.default.createClass({
 			console.error('Error getting this week\'s rankings!', error);
 		});
 	},
+	getStandings: function getStandings() {
+		var setRecords = this.setRecords;
+		this.context.feathersApp.io.on('cflStandings', function (records) {
+			setRecords(records);
+		});
+		this.context.feathersApp.io.emit('cflStandings');
+	},
+	setRecords: function setRecords(records) {
+		this.setState({
+			records: records
+		});
+	},
 	tabulateRankings: function tabulateRankings(rankings) {
 		var results = {};
 		var teams = [];
@@ -19708,11 +19723,12 @@ module.exports = _react2.default.createClass({
 			if (!teams.includes(ranking.user.team)) {
 				teams.push(ranking.user.team);
 				ranking.ranks.forEach(function (rank, index) {
+					var rating = index + 1;
 					if (results[rank._id]) {
-						results[rank._id]['points'] = results[rank._id]['points'] + index;
+						results[rank._id]['points'] = results[rank._id]['points'] + rating;
 					} else {
 						results[rank._id] = {
-							'points': index,
+							'points': rating,
 							'name': rank.name
 						};
 					}
@@ -19733,8 +19749,21 @@ module.exports = _react2.default.createClass({
 		});
 
 		this.setState({
-			results: sortedResults
+			results: sortedResults,
+			markDown: this.createMarkDown(sortedResults)
 		});
+		this.getStandings();
+	},
+	createMarkDown: function createMarkDown(results) {
+		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
+		tableHead += "-:|-|-|-|-|-|-\n";
+		var tableRows = results.map(function (result, key) {
+			return key + 1 + "||" + result.name + "|||" + result.points + "|" + "\n";
+		});
+		var tableBody = tableRows.join('');
+
+		console.log(tableHead + tableBody);
+		return tableHead + tableBody;
 	},
 	render: function render() {
 		return _react2.default.createElement(
@@ -19745,7 +19774,6 @@ module.exports = _react2.default.createClass({
 				'ul',
 				null,
 				this.state.results.map(function (result, key) {
-
 					return _react2.default.createElement(
 						'li',
 						{ key: key },
@@ -19754,7 +19782,8 @@ module.exports = _react2.default.createClass({
 						result.points
 					);
 				})
-			)
+			),
+			_react2.default.createElement('textarea', { rows: '15', cols: '75', value: this.state.markDown })
 		);
 	}
 });
@@ -20013,8 +20042,33 @@ module.exports = _react2.default.createClass({
 		feathersApp: _react2.default.PropTypes.object,
 		login: _react2.default.PropTypes.bool
 	},
+	getInitialState: function getInitialState() {
+		return {
+			rankings: ''
+		};
+	},
+	setRankings: function setRankings(rankings) {
+		this.setState({
+			rankings: rankings
+		});
+	},
+	componentDidMount: function componentDidMount() {
+		var setRankings = this.setRankings;
+		this.context.feathersApp.service('rankings').find({ query: { week: this.props.id } }).then(function (result) {
+			setRankings(result.total);
+		}).catch(function (error) {
+			console.error('Error getting this week\'s rankings!', error);
+		});
+	},
 	render: function render() {
-		return _react2.default.createElement('li', null);
+		return _react2.default.createElement(
+			'li',
+			null,
+			'Week: ',
+			this.props.name,
+			' Rankings: ',
+			this.state.rankings
+		);
 	}
 });
 
@@ -20063,7 +20117,7 @@ module.exports = _react2.default.createClass({
 			'ul',
 			null,
 			this.state.weeks.map(function (week, i) {
-				return _react2.default.createElement(_WeekItem2.default, { key: week._id, week: week });
+				return _react2.default.createElement(_WeekItem2.default, { key: week._id, name: week.name, id: week._id });
 			}, this)
 		);
 	}

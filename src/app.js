@@ -13,6 +13,7 @@ const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const services = require('./services');
+const fetch = require('node-fetch');
 
 const app = feathers();
 
@@ -35,8 +36,32 @@ app.use(compress())
   .use(bodyParser.urlencoded({ extended: true }))
   .configure(hooks())
   .configure(rest())
-  .configure(socketio())
+  .configure(socketio(function(io) {
+    io.on('connection', function(socket) {
+      socket.on('cflStandings', function () {
+        var apiKeys = app.get('apiKeys');
+        fetch('http://api.cfl.ca/v1/standings/2016?key=' + apiKeys.CFL)
+            .then(function(res) {
+                return res.json();
+            }).then(function(json) {
+                var westStandings = json.data.divisions.west.standings;
+                var standings = westStandings.concat(json.data.divisions.east.standings);
+                var records = {};
+                standings.forEach(function(team) {
+                  records[team.team_id] = {
+                    wins: team.wins,
+                    losses: team.losses,
+                    ties: team.ties
+                  }
+                });
+                socket.emit('cflStandings', records);
+            });
+      });
+    });
+  }))
   .configure(services)
   .configure(middleware);
 
 module.exports = app;
+
+

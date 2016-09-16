@@ -19,5 +19,8 @@
       "successRedirect" : "/"
     }
   },
-  "corsWhitelist": []
+  "corsWhitelist": [],
+  "apiKeys" : {
+    "CFL" : "cfl api key"
+  }
 }

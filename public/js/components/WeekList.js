@@ -31,7 +31,7 @@ module.exports = React.createClass({
 			<ul>
 		        {this.state.weeks.map(function(week, i) {
 					return (
-						<WeekItem key={week._id} week={week} />
+						<WeekItem key={week._id} name={week.name} id={week._id} />
 					)
 				}, this)}
 			</ul>
