@@ -10,8 +10,11 @@ module.exports = React.createClass({
 		return {
 			results: [],
 			markDown: '',
-			records: {}
+			records: []
 		}
+	},
+	componentDidMount: function() {
+		this.getStandings();
 	},
 	getRankings: function () {
 		var tabulateRankings = this.tabulateRankings;
@@ -46,7 +49,9 @@ module.exports = React.createClass({
 					} else {
 						results[rank._id] = {
 							'points' : rating,
-							'name' : rank.name
+							'location' : rank.location,
+							'cflId': rank.cflId,
+							'flair': rank.flair
 						}					
 					}
 
@@ -68,14 +73,13 @@ module.exports = React.createClass({
 			results: sortedResults,
 			markDown: this.createMarkDown(sortedResults)
 		});
-		this.getStandings();
 	},
 	createMarkDown: function(results) {
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 			tableHead += "-:|-|-|-|-|-|-\n";
 		var tableRows = results.map(function(result, key) {
-			return (key + 1) + "||" + result.name + "|||"+ result.points +"|" + "\n";
-		});
+			return (key + 1) + "|" + result.flair + "|" + result.location + "||" + this.state.records[result.cflId] + "|"+ result.points +"|" + "\n";
+		}.bind(this));
 		var tableBody = tableRows.join('');
 		
 		console.log(tableHead + tableBody);
@@ -88,7 +92,7 @@ module.exports = React.createClass({
 				<ul>
 					{this.state.results.map(function(result, key){
 						return (
-							<li key={key} >{result.name}:{result.points}</li>
+							<li key={key} >{result.location}:{result.points}</li>
 						);
 					})}
 				</ul>

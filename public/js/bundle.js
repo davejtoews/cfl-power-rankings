@@ -19693,8 +19693,11 @@ module.exports = _react2.default.createClass({
 		return {
 			results: [],
 			markDown: '',
-			records: {}
+			records: []
 		};
+	},
+	componentDidMount: function componentDidMount() {
+		this.getStandings();
 	},
 	getRankings: function getRankings() {
 		var tabulateRankings = this.tabulateRankings;
@@ -19729,7 +19732,9 @@ module.exports = _react2.default.createClass({
 					} else {
 						results[rank._id] = {
 							'points': rating,
-							'name': rank.name
+							'location': rank.location,
+							'cflId': rank.cflId,
+							'flair': rank.flair
 						};
 					}
 				});
@@ -19752,14 +19757,13 @@ module.exports = _react2.default.createClass({
 			results: sortedResults,
 			markDown: this.createMarkDown(sortedResults)
 		});
-		this.getStandings();
 	},
 	createMarkDown: function createMarkDown(results) {
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 		tableHead += "-:|-|-|-|-|-|-\n";
 		var tableRows = results.map(function (result, key) {
-			return key + 1 + "||" + result.name + "|||" + result.points + "|" + "\n";
-		});
+			return key + 1 + "|" + result.flair + "|" + result.location + "||" + this.state.records[result.cflId] + "|" + result.points + "|" + "\n";
+		}.bind(this));
 		var tableBody = tableRows.join('');
 
 		console.log(tableHead + tableBody);
@@ -19777,7 +19781,7 @@ module.exports = _react2.default.createClass({
 					return _react2.default.createElement(
 						'li',
 						{ key: key },
-						result.name,
+						result.location,
 						':',
 						result.points
 					);
@@ -19950,7 +19954,7 @@ module.exports = _react2.default.createClass({
 						onDragEnd: this.dragEnd,
 						onDragStart: this.dragStart
 					},
-					team.name
+					team.location
 				);
 			}, this)
 		);
@@ -20017,7 +20021,7 @@ module.exports = _react2.default.createClass({
 							key: i,
 							value: team._id
 						},
-						team.name
+						team.location
 					);
 				}, this)
 			),

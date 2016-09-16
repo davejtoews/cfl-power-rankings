@@ -46,7 +46,7 @@ module.exports = React.createClass({
 							<option 
 								key={i}
 								value={team._id}
-							>{team.name}</option>
+							>{team.location}</option>
 						)
 					}, this)}
 				</select>

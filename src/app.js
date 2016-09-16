@@ -48,11 +48,10 @@ app.use(compress())
                 var standings = westStandings.concat(json.data.divisions.east.standings);
                 var records = {};
                 standings.forEach(function(team) {
-                  records[team.team_id] = {
-                    wins: team.wins,
-                    losses: team.losses,
-                    ties: team.ties
-                  }
+                  var recordString = team.wins + "-";
+                      recordString += team.losses + "-";
+                      recordString += team.ties;
+                  records[team.team_id] = recordString;
                 });
                 socket.emit('cflStandings', records);
             });

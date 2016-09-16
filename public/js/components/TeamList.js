@@ -65,7 +65,7 @@ module.exports = React.createClass({
 				            draggable="true"
 				            onDragEnd={this.dragEnd}
 				            onDragStart={this.dragStart}
-						>{team.name}</li>
+						>{team.location}</li>
 					)
 				}, this)}
 			</ul>
