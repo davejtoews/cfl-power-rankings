@@ -8,6 +8,6 @@
 
 exports.myHook = function(options) {
   return function(hook) {
-    console.log('My custom global hook ran. Feathers is awesome!');
+	hook.result = {error: 'You must be an admin'};
   };
 };
