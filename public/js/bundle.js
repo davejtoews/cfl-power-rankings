@@ -19407,13 +19407,15 @@ module.exports = _react2.default.createClass({
 		return {
 			week: '',
 			teams: [],
-			weekConfig: ''
+			weekConfig: '',
+			submitted: false
 		};
 	},
 	getInfo: function getInfo(currentWeekId) {
 		var setWeek = this.setWeek;
 		var setTeams = this.setTeams;
 		var getTeams = this.getTeams;
+		var setSubmitted = this.setSubmitted;
 
 		this.props.feathersApp.service('weeks').get(currentWeekId, { query: { $populate: 'year' } }).then(function (result) {
 			setWeek(result);
@@ -19421,6 +19423,7 @@ module.exports = _react2.default.createClass({
 		this.props.feathersApp.service('rankings').find({ query: { user: this.props.userId, week: currentWeekId, $populate: 'ranks' } }).then(function (result) {
 			if (result.total) {
 				setTeams(result.data[0].ranks);
+				setSubmitted(result.data[0]._id);
 			} else {
 				getTeams();
 			}
@@ -19449,6 +19452,11 @@ module.exports = _react2.default.createClass({
 	setWeekConfig: function setWeekConfig(weekConfig) {
 		this.setState({
 			weekConfig: weekConfig
+		});
+	},
+	setSubmitted: function setSubmitted(submitted) {
+		this.setState({
+			submitted: submitted
 		});
 	},
 	componentDidMount: function componentDidMount() {
@@ -19482,7 +19490,9 @@ module.exports = _react2.default.createClass({
 			_react2.default.createElement(_SubmitButton2.default, {
 				teams: this.state.teams,
 				weekId: this.state.week._id,
-				userId: this.props.userId
+				userId: this.props.userId,
+				submitted: this.state.submitted,
+				setSubmitted: this.setSubmitted
 			}),
 			_react2.default.createElement(_Results2.default, {
 				weekId: this.state.week._id
@@ -19859,19 +19869,30 @@ module.exports = _react2.default.createClass({
 	},
 	handleClick: function handleClick(e) {
 		e.preventDefault();
+		var setSubmitted = this.props.setSubmitted;
 		if (this.context.login && this.state.ranks.length && this.state.week) {
-			this.context.feathersApp.service('rankings').create(this.state).then(function (result) {
-				console.log(result);
-			}).catch(function (error) {
-				console.error('Error submitting rankings!', error);
-			});
+			if (this.props.submitted) {
+				this.context.feathersApp.service('rankings').patch(this.props.sumbitted, this.state).then(function (result) {
+					console.log(result);
+				}).catch(function (error) {
+					console.error('Error updating rankings!', error);
+				});
+			} else {
+				this.context.feathersApp.service('rankings').create(this.state).then(function (result) {
+					setSubmitted(result._id);
+					console.log(result);
+				}).catch(function (error) {
+					console.error('Error submitting rankings!', error);
+				});
+			}
 		}
 	},
 	render: function render() {
+		var text = this.props.submitted ? 'Update' : 'Submit';
 		return _react2.default.createElement(
 			'a',
 			{ href: '#', className: 'button', onClick: this.handleClick },
-			'Submit'
+			text
 		);
 	}
 });
@@ -20048,7 +20069,8 @@ module.exports = _react2.default.createClass({
 	},
 	getInitialState: function getInitialState() {
 		return {
-			rankings: ''
+			rankings: '',
+			rankers: []
 		};
 	},
 	setRankings: function setRankings(rankings) {
@@ -20056,9 +20078,25 @@ module.exports = _react2.default.createClass({
 			rankings: rankings
 		});
 	},
+	addRanker: function addRanker(ranker) {
+		var rankers = this.state.rankers;
+		rankers.push(ranker);
+		this.setState({
+			rankers: rankers
+		});
+	},
 	componentDidMount: function componentDidMount() {
 		var setRankings = this.setRankings;
-		this.context.feathersApp.service('rankings').find({ query: { week: this.props.id } }).then(function (result) {
+		var addRanker = this.addRanker;
+		var context = this.context;
+		context.feathersApp.service('rankings').find({ query: { week: this.props.id } }).then(function (result) {
+			result.data.forEach(function (ranking) {
+				context.feathersApp.service('users').get(ranking.user, { query: { $populate: 'team' } }).then(function (result) {
+					addRanker(result);
+				}).catch(function (error) {
+					console.error('Error getting user', error);
+				});
+			});
 			setRankings(result.total);
 		}).catch(function (error) {
 			console.error('Error getting this week\'s rankings!', error);
@@ -20071,7 +20109,20 @@ module.exports = _react2.default.createClass({
 			'Week: ',
 			this.props.name,
 			' Rankings: ',
-			this.state.rankings
+			this.state.rankings,
+			_react2.default.createElement(
+				'ul',
+				null,
+				this.state.rankers.map(function (ranker, key) {
+					return _react2.default.createElement(
+						'li',
+						{ key: key },
+						ranker.reddit.name,
+						': ',
+						ranker.team.nickname
+					);
+				})
+			)
 		);
 	}
 });

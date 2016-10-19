@@ -20,13 +20,15 @@ module.exports = React.createClass({
 		return {
 			week: '',
 			teams: [],
-			weekConfig: ''
+			weekConfig: '',
+			submitted: false
 		}
 	},
 	getInfo: function(currentWeekId) {
 		var setWeek = this.setWeek;
 		var setTeams = this.setTeams;
 		var getTeams = this.getTeams;
+		var setSubmitted = this.setSubmitted;
 
 		this.props.feathersApp.service('weeks').get(currentWeekId, {query: { $populate: 'year' }}).then(function(result){
 			setWeek(result);
@@ -34,11 +36,11 @@ module.exports = React.createClass({
 		this.props.feathersApp.service('rankings').find({query: {user: this.props.userId, week: currentWeekId, $populate: 'ranks'}}).then(function(result) {
 			if (result.total) {
 				setTeams(result.data[0].ranks);
+				setSubmitted(result.data[0]._id);
 			} else {
 				getTeams();
 			}
 		});
-
 	},
 	getTeams: function() {
 		var setTeams = this.setTeams;
@@ -63,6 +65,11 @@ module.exports = React.createClass({
 	setWeekConfig: function(weekConfig) {
 		this.setState({
 			weekConfig: weekConfig
+		});
+	},
+	setSubmitted: function(submitted) {
+		this.setState({
+			submitted: submitted
 		});
 	},
 	componentDidMount: function() {
@@ -95,7 +102,9 @@ module.exports = React.createClass({
 				<SubmitButton 
 					teams={this.state.teams}
 					weekId={this.state.week._id} 
-					userId={this.props.userId} 
+					userId={this.props.userId}
+					submitted={this.state.submitted}
+					setSubmitted={this.setSubmitted}
 				/>
 				<Results 
 					weekId={this.state.week._id} 

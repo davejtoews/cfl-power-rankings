@@ -25,17 +25,28 @@ module.exports = React.createClass({
 	},
 	handleClick: function(e) {
 		e.preventDefault();
+		var setSubmitted = this.props.setSubmitted;
 		if (this.context.login && this.state.ranks.length  && this.state.week) {
-			this.context.feathersApp.service('rankings').create(this.state).then(function(result){
-				console.log(result);
-			}).catch(function(error){
-				console.error('Error submitting rankings!', error);
-			});
+			if (this.props.submitted) {
+				this.context.feathersApp.service('rankings').patch(this.props.sumbitted, this.state).then(function(result){
+					console.log(result);
+				}).catch(function(error){
+					console.error('Error updating rankings!', error);
+				});
+			} else {
+				this.context.feathersApp.service('rankings').create(this.state).then(function(result){
+					setSubmitted(result._id);
+					console.log(result);
+				}).catch(function(error){
+					console.error('Error submitting rankings!', error);
+				});				
+			}
 		}
 	},
 	render: function () {
+		var text = (this.props.submitted) ? 'Update' : 'Submit';
 		return(
-			<a href="#" className="button" onClick={ this.handleClick }>Submit</a>
+			<a href="#" className="button" onClick={ this.handleClick }>{text}</a>
 		);
 	}
 });
