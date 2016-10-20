@@ -4,6 +4,7 @@ import Info from './Info';
 import TeamList from './TeamList';
 import SubmitButton from './SubmitButton';
 import Results from './Results';
+import UserList from './UserList';
 
 module.exports = React.createClass({
 	childContextTypes: {
@@ -84,31 +85,37 @@ module.exports = React.createClass({
 	},
 	render: function () {
 		return(
-			<div>
-				<LoginButton />
-				<Info 
-					teams={this.state.teams} 
-					week={this.state.week} 
-					username={this.props.username} 
-					userId={this.props.userId} 
-					userTeam={this.props.userTeam}
-					setWeek={this.setWeek}
-					weekConfig={this.state.weekConfig}
-				/>
-				<TeamList 
-					teams={this.state.teams} 
-					setTeams={this.setTeams} 
-				/>
-				<SubmitButton 
-					teams={this.state.teams}
-					weekId={this.state.week._id} 
-					userId={this.props.userId}
-					submitted={this.state.submitted}
-					setSubmitted={this.setSubmitted}
-				/>
+			<div className="app-wrapper">
+				<header>
+					<Info 
+						teams={this.state.teams} 
+						week={this.state.week} 
+						username={this.props.username} 
+						userId={this.props.userId} 
+						userTeam={this.props.userTeam}
+						setWeek={this.setWeek}
+						weekConfig={this.state.weekConfig}
+					/>
+					<LoginButton />
+				</header>
+				<main>
+					<TeamList 
+						teams={this.state.teams} 
+						setTeams={this.setTeams} 
+					/>
+					<SubmitButton 
+						teams={this.state.teams}
+						weekId={this.state.week._id} 
+						userId={this.props.userId}
+						submitted={this.state.submitted}
+						setSubmitted={this.setSubmitted}
+					/>
+				</main>
+
 				<Results 
 					weekId={this.state.week._id} 
 				/>
+				<UserList />
 			</div>
 
 		);

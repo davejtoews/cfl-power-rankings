@@ -22,24 +22,32 @@ module.exports = React.createClass({
 		var year = (this.props.week) ? this.props.week.year.year : '';
 		var yearId = (this.props.week) ? this.props.week.year._id : false;
 		return(
-			<div>
-				<ul>
-					<li>Year: {year}</li>
+			<section className="info">
+				<details className="week-details">
+					<summary>
+						<svg className="icon icon-info">
+							<use xlinkHref="#icon-info"></use>
+						</svg>
+					</summary>
+					<WeekList yearId={yearId}/>
+					<NewWeek
+						currentWeek={this.props.week}
+						setWeek={this.props.setWeek}
+						weekConfig={this.props.weekConfig}
+					/>
+				</details>
+				<ul className="info-list">
 					<li>Week: {this.props.week.name}</li>
-					<li>User: {this.props.username}</li>
+					<li>{year}</li>
+					<li>{this.props.username}</li>
 				</ul>
 				<TeamSelect 
 					teams={this.state.teams} 
 					userId={this.props.userId} 
 					userTeam={this.props.userTeam}
 				/>
-				<WeekList yearId={yearId}/>
-				<NewWeek
-					currentWeek={this.props.week}
-					setWeek={this.props.setWeek}
-					weekConfig={this.props.weekConfig}
-				/>
-			</div>
+
+			</section>
 
 		);
 	}

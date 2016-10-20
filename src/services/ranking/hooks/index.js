@@ -8,15 +8,22 @@ exports.before = {
   all: [
     auth.verifyToken(),
     auth.populateUser(),
-    auth.restrictToAuthenticated(),
-    globalHooks.myHook()
+    auth.restrictToAuthenticated()
   ],
   find: [],
   get: [],
-  create: [],
-  update: [],
-  patch: [],
-  remove: []
+  create: [
+    globalHooks.isAdmin()
+  ],
+  update: [
+    globalHooks.isAdmin()
+  ],
+  patch: [
+    globalHooks.isAdmin()
+  ],
+  remove: [
+    globalHooks.isAdmin()
+  ]
 };
 
 exports.after = {

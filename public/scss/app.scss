@@ -1,0 +1,98 @@
+@import "bourbon/bourbon";
+@import "base/base";
+@import "neat/neat";
+
+.button {
+	@extend button;
+}
+
+summary {
+	border-radius: $base-border-radius;
+	background-color: $action-color;
+	color: #fff;
+	width: 4em;
+	line-height: 2.75em;
+	text-align: center;
+	margin-right: 1em;
+
+	svg {
+		font-size: 1.5em;
+		position: relative;
+		top: 0.25em;
+	}
+
+	&:hover,
+	&:focus {
+		background-color: shade($action-color, 20%);
+		color: #fff;
+	}
+}
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+//$calgary-bg:
+//$calgary-txt:
+
+header {
+	padding: 0.5em 1em;
+	position: relative;
+	background-color: $dark-gray;
+	color: $light-gray;
+	font-size: 0.8em;
+}
+
+	.info {
+		max-width: calc(100% - 6em);
+	}
+
+		.info-list {
+			display: inline-block;
+			vertical-align: top;
+			margin: 0.75em;
+			li {
+				display: inline-block;
+				margin: 0 0.5em;
+			}
+		}
+
+		.team-select{
+			display: inline-block;
+			margin: 0.75em;
+			vertical-align: top;
+			width: auto;
+		}
+
+		.week-details {
+			display: inline-block;
+			vertical-align: top;
+			width: 4em;
+			white-space: nowrap;
+		}
+
+	.login {
+		position: absolute;
+		right: 0;
+		top: 0;
+		margin: 0.5em 1em;
+	}
+
+main {
+	padding: 0.5em 1em;
+	text-align: center;
+}
+	.team-list {
+		li {
+
+		}
+	}
+
+.placeholder {
+	height: 1.5em;
+}

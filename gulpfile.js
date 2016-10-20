@@ -8,6 +8,12 @@ var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var gutil = require('gulp-util');
 var notify = require("gulp-notify");
+
+var postcss = require('gulp-postcss');
+var sass = require('gulp-sass');
+var watch = require('gulp-watch');
+var autoprefixer = require('autoprefixer');
+var sourcemaps = require('gulp-sourcemaps');
  
 function handleErrors() {
   var args = Array.prototype.slice.call(arguments);
@@ -56,5 +62,23 @@ gulp.task('scripts:watch', function() {
   return buildScript(true);
 });
 
-gulp.task('default', ['scripts']);
-gulp.task('watch', ['scripts:watch']);
+gulp.task('default', ['scripts', 'css']);
+gulp.task('watch', ['scripts:watch', 'css:watch']);
+ 
+gulp.task('css', function () {
+    var processors = [
+        autoprefixer
+    ];
+    return gulp.src('./public/scss/*.scss')
+      .pipe(sourcemaps.init())
+        .pipe(sass().on('error', sass.logError))
+        .pipe(postcss(processors))
+        .pipe(sourcemaps.write('scss/maps'))
+        .pipe(gulp.dest('./public/'));
+});
+
+gulp.task('css:watch', function () {
+    watch('./public/scss/**/*.scss', function(){
+        gulp.start('css');
+    });
+});

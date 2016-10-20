@@ -10,8 +10,8 @@ module.exports = function() {
   const options = {
     Model: ranking,
     paginate: {
-      default: 5,
-      max: 25
+      default: 9,
+      max: 9
     }
   };
 

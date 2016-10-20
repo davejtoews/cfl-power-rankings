@@ -12,7 +12,8 @@ const Schema = mongoose.Schema,
 const userSchema = new Schema({
   redditId: { type: String },
   reddit: { type: Schema.Types.Mixed },
-  team: { type: ObjectId, ref: 'team'}, 
+  team: { type: ObjectId, ref: 'team'},
+  admin: {type: Boolean },
   
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }

@@ -12,10 +12,18 @@ exports.before = {
   ],
   find: [],
   get: [],
-  create: [],
-  update: [],
-  patch: [],
-  remove: []
+  create: [
+    globalHooks.isAdmin()
+  ],
+  update: [
+    globalHooks.isAdmin()
+  ],
+  patch: [
+    globalHooks.isAdmin()
+  ],
+  remove: [
+    globalHooks.isAdmin()
+  ]
 };
 
 exports.after = {

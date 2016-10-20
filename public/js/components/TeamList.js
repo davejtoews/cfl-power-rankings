@@ -56,7 +56,7 @@ module.exports = React.createClass({
 	},
 	render: function () {
 		return(
-			<ul onDragOver={this.dragOver}>
+			<ul className="team-list" onDragOver={this.dragOver}>
 		        {this.state.teams.map(function(team, i) {
 					return (
 						<li 

@@ -10,19 +10,37 @@ module.exports = React.createClass({
 		return {
 			results: [],
 			markDown: '',
-			records: []
+			records: [],
+			lastWeekName: '',
+			lastWeekResults: []
 		}
 	},
 	componentDidMount: function() {
 		this.getStandings();
 	},
 	getRankings: function () {
-		var tabulateRankings = this.tabulateRankings;
+		var setRankings = this.setRankings;
+		var getLastWeekRankings = this.getLastWeekRankings;
 		this.context.feathersApp.service('rankings').find({query: { week: this.props.weekId, $populate: ['ranks', 'user']}}).then(function(result){
-			tabulateRankings(result.data)
+			setRankings(result.data);
+			getLastWeekRankings();
 		}).catch(function(error){
 				console.error('Error getting this week\'s rankings!', error);
 		});
+	},
+	getLastWeekRankings: function() {
+		var lastWeekName = this.state.lastWeekName;
+		var setLastWeekResults = this.setLastWeekResults;
+		var context = this.context;
+		context.feathersApp.service('weeks').find({query: { name: lastWeekName }}).then(function(result){
+			context.feathersApp.service('rankings').find({query: { week: result.data[0]._id, $populate: ['ranks', 'user']}}).then(function(result){
+				setLastWeekResults(result.data);
+			}).catch(function(error){
+					console.error('Error getting last week\'s rankings!', error);
+			});
+		}).catch(function(error){
+				console.error('Error getting last week!', error);
+		});		
 	},
 	getStandings: function() {
 		var setRecords = this.setRecords;
@@ -34,6 +52,22 @@ module.exports = React.createClass({
 	setRecords: function(records) {
 		this.setState({
 			records: records
+		});
+	},
+	setLastWeekResults: function(rankings) {
+		var results = this.state.results;
+		this.setState({
+			lastWeekResults: this.tabulateRankings(rankings)
+		});
+		this.setState({
+			markDown: this.createMarkDown(results)
+		})
+	},
+	setRankings: function(rankings) {
+		var results = this.tabulateRankings(rankings);
+		this.setState({
+			results: results,
+			markDown: this.createMarkDown(results)
 		});
 	},
 	tabulateRankings: function(rankings) {
@@ -69,25 +103,42 @@ module.exports = React.createClass({
 			return 0;
 		});
 
-		this.setState({
-			results: sortedResults,
-			markDown: this.createMarkDown(sortedResults)
+		return sortedResults;
+	},
+	getDelta: function(thisWeekResult) {
+		var lastWeekResult;
+
+		this.state.lastWeekResults.forEach(function(result) {
+			if (result.cflId == thisWeekResult.cflId) {
+				lastWeekResult = result;
+			}
 		});
+
+		return thisWeekResult.points - lastWeekResult.points;
 	},
 	createMarkDown: function(results) {
+		console.log('markdown');
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 			tableHead += "-:|-|-|-|-|-|-\n";
 		var tableRows = results.map(function(result, key) {
-			return (key + 1) + "|" + result.flair + "|" + result.location + "||" + this.state.records[result.cflId] + "|"+ result.points +"|" + "\n";
+			var delta = 0;
+			if(this.state.lastWeekResults.length) {
+				delta = this.getDelta(result);
+			}	
+			return (key + 1) + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ result.points +"|" + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');
-		
-		console.log(tableHead + tableBody);
 		return tableHead + tableBody;
+	},
+	handleChange: function(e) {
+		this.setState({
+			lastWeekName: e.target.value
+		});
 	},
 	render: function () {
 		return(
 			<div>
+				<input type="text" value={this.state.lastWeekName} onChange={this.handleChange} />
 				<ResultsButton getRankings={this.getRankings} />
 				<ul>
 					{this.state.results.map(function(result, key){

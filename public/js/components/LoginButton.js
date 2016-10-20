@@ -20,7 +20,7 @@ module.exports = React.createClass({
 		var url = this.context.login ? '/' : '/auth/reddit';
 		var text = this.context.login ? 'Logout' : 'Login';
 		return(
-			<a href={ url } className="button" onClick={ this.handleClick }>{ text }</a>
+			<a href={ url } className="button login" onClick={ this.handleClick }>{ text }</a>
 		);
 	}
 });

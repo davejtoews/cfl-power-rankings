@@ -19388,6 +19388,10 @@ var _Results = require('./Results');
 
 var _Results2 = _interopRequireDefault(_Results);
 
+var _UserList = require('./UserList');
+
+var _UserList2 = _interopRequireDefault(_UserList);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -19472,36 +19476,45 @@ module.exports = _react2.default.createClass({
 	render: function render() {
 		return _react2.default.createElement(
 			'div',
-			null,
-			_react2.default.createElement(_LoginButton2.default, null),
-			_react2.default.createElement(_Info2.default, {
-				teams: this.state.teams,
-				week: this.state.week,
-				username: this.props.username,
-				userId: this.props.userId,
-				userTeam: this.props.userTeam,
-				setWeek: this.setWeek,
-				weekConfig: this.state.weekConfig
-			}),
-			_react2.default.createElement(_TeamList2.default, {
-				teams: this.state.teams,
-				setTeams: this.setTeams
-			}),
-			_react2.default.createElement(_SubmitButton2.default, {
-				teams: this.state.teams,
-				weekId: this.state.week._id,
-				userId: this.props.userId,
-				submitted: this.state.submitted,
-				setSubmitted: this.setSubmitted
-			}),
+			{ className: 'app-wrapper' },
+			_react2.default.createElement(
+				'header',
+				null,
+				_react2.default.createElement(_Info2.default, {
+					teams: this.state.teams,
+					week: this.state.week,
+					username: this.props.username,
+					userId: this.props.userId,
+					userTeam: this.props.userTeam,
+					setWeek: this.setWeek,
+					weekConfig: this.state.weekConfig
+				}),
+				_react2.default.createElement(_LoginButton2.default, null)
+			),
+			_react2.default.createElement(
+				'main',
+				null,
+				_react2.default.createElement(_TeamList2.default, {
+					teams: this.state.teams,
+					setTeams: this.setTeams
+				}),
+				_react2.default.createElement(_SubmitButton2.default, {
+					teams: this.state.teams,
+					weekId: this.state.week._id,
+					userId: this.props.userId,
+					submitted: this.state.submitted,
+					setSubmitted: this.setSubmitted
+				})
+			),
 			_react2.default.createElement(_Results2.default, {
 				weekId: this.state.week._id
-			})
+			}),
+			_react2.default.createElement(_UserList2.default, null)
 		);
 	}
 });
 
-},{"./Info":167,"./LoginButton":168,"./Results":170,"./SubmitButton":172,"./TeamList":173,"react":165}],167:[function(require,module,exports){
+},{"./Info":167,"./LoginButton":168,"./Results":170,"./SubmitButton":172,"./TeamList":173,"./UserList":175,"react":165}],167:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19543,17 +19556,30 @@ module.exports = _react2.default.createClass({
 		var year = this.props.week ? this.props.week.year.year : '';
 		var yearId = this.props.week ? this.props.week.year._id : false;
 		return _react2.default.createElement(
-			'div',
-			null,
+			'section',
+			{ className: 'info' },
+			_react2.default.createElement(
+				'details',
+				{ className: 'week-details' },
+				_react2.default.createElement(
+					'summary',
+					null,
+					_react2.default.createElement(
+						'svg',
+						{ className: 'icon icon-info' },
+						_react2.default.createElement('use', { xlinkHref: '#icon-info' })
+					)
+				),
+				_react2.default.createElement(_WeekList2.default, { yearId: yearId }),
+				_react2.default.createElement(_NewWeek2.default, {
+					currentWeek: this.props.week,
+					setWeek: this.props.setWeek,
+					weekConfig: this.props.weekConfig
+				})
+			),
 			_react2.default.createElement(
 				'ul',
-				null,
-				_react2.default.createElement(
-					'li',
-					null,
-					'Year: ',
-					year
-				),
+				{ className: 'info-list' },
 				_react2.default.createElement(
 					'li',
 					null,
@@ -19563,7 +19589,11 @@ module.exports = _react2.default.createClass({
 				_react2.default.createElement(
 					'li',
 					null,
-					'User: ',
+					year
+				),
+				_react2.default.createElement(
+					'li',
+					null,
 					this.props.username
 				)
 			),
@@ -19571,18 +19601,12 @@ module.exports = _react2.default.createClass({
 				teams: this.state.teams,
 				userId: this.props.userId,
 				userTeam: this.props.userTeam
-			}),
-			_react2.default.createElement(_WeekList2.default, { yearId: yearId }),
-			_react2.default.createElement(_NewWeek2.default, {
-				currentWeek: this.props.week,
-				setWeek: this.props.setWeek,
-				weekConfig: this.props.weekConfig
 			})
 		);
 	}
 });
 
-},{"./NewWeek":169,"./TeamSelect":174,"./WeekList":176,"react":165}],168:[function(require,module,exports){
+},{"./NewWeek":169,"./TeamSelect":174,"./WeekList":177,"react":165}],168:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19614,7 +19638,7 @@ module.exports = _react2.default.createClass({
 		var text = this.context.login ? 'Logout' : 'Login';
 		return _react2.default.createElement(
 			'a',
-			{ href: url, className: 'button', onClick: this.handleClick },
+			{ href: url, className: 'button login', onClick: this.handleClick },
 			text
 		);
 	}
@@ -19703,18 +19727,36 @@ module.exports = _react2.default.createClass({
 		return {
 			results: [],
 			markDown: '',
-			records: []
+			records: [],
+			lastWeekName: '',
+			lastWeekResults: []
 		};
 	},
 	componentDidMount: function componentDidMount() {
 		this.getStandings();
 	},
 	getRankings: function getRankings() {
-		var tabulateRankings = this.tabulateRankings;
+		var setRankings = this.setRankings;
+		var getLastWeekRankings = this.getLastWeekRankings;
 		this.context.feathersApp.service('rankings').find({ query: { week: this.props.weekId, $populate: ['ranks', 'user'] } }).then(function (result) {
-			tabulateRankings(result.data);
+			setRankings(result.data);
+			getLastWeekRankings();
 		}).catch(function (error) {
 			console.error('Error getting this week\'s rankings!', error);
+		});
+	},
+	getLastWeekRankings: function getLastWeekRankings() {
+		var lastWeekName = this.state.lastWeekName;
+		var setLastWeekResults = this.setLastWeekResults;
+		var context = this.context;
+		context.feathersApp.service('weeks').find({ query: { name: lastWeekName } }).then(function (result) {
+			context.feathersApp.service('rankings').find({ query: { week: result.data[0]._id, $populate: ['ranks', 'user'] } }).then(function (result) {
+				setLastWeekResults(result.data);
+			}).catch(function (error) {
+				console.error('Error getting last week\'s rankings!', error);
+			});
+		}).catch(function (error) {
+			console.error('Error getting last week!', error);
 		});
 	},
 	getStandings: function getStandings() {
@@ -19727,6 +19769,22 @@ module.exports = _react2.default.createClass({
 	setRecords: function setRecords(records) {
 		this.setState({
 			records: records
+		});
+	},
+	setLastWeekResults: function setLastWeekResults(rankings) {
+		var results = this.state.results;
+		this.setState({
+			lastWeekResults: this.tabulateRankings(rankings)
+		});
+		this.setState({
+			markDown: this.createMarkDown(results)
+		});
+	},
+	setRankings: function setRankings(rankings) {
+		var results = this.tabulateRankings(rankings);
+		this.setState({
+			results: results,
+			markDown: this.createMarkDown(results)
 		});
 	},
 	tabulateRankings: function tabulateRankings(rankings) {
@@ -19763,26 +19821,43 @@ module.exports = _react2.default.createClass({
 			return 0;
 		});
 
-		this.setState({
-			results: sortedResults,
-			markDown: this.createMarkDown(sortedResults)
+		return sortedResults;
+	},
+	getDelta: function getDelta(thisWeekResult) {
+		var lastWeekResult;
+
+		this.state.lastWeekResults.forEach(function (result) {
+			if (result.cflId == thisWeekResult.cflId) {
+				lastWeekResult = result;
+			}
 		});
+
+		return thisWeekResult.points - lastWeekResult.points;
 	},
 	createMarkDown: function createMarkDown(results) {
+		console.log('markdown');
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 		tableHead += "-:|-|-|-|-|-|-\n";
 		var tableRows = results.map(function (result, key) {
-			return key + 1 + "|" + result.flair + "|" + result.location + "||" + this.state.records[result.cflId] + "|" + result.points + "|" + "\n";
+			var delta = 0;
+			if (this.state.lastWeekResults.length) {
+				delta = this.getDelta(result);
+			}
+			return key + 1 + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|" + result.points + "|" + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');
-
-		console.log(tableHead + tableBody);
 		return tableHead + tableBody;
+	},
+	handleChange: function handleChange(e) {
+		this.setState({
+			lastWeekName: e.target.value
+		});
 	},
 	render: function render() {
 		return _react2.default.createElement(
 			'div',
 			null,
+			_react2.default.createElement('input', { type: 'text', value: this.state.lastWeekName, onChange: this.handleChange }),
 			_react2.default.createElement(_ResultsButton2.default, { getRankings: this.getRankings }),
 			_react2.default.createElement(
 				'ul',
@@ -19964,7 +20039,7 @@ module.exports = _react2.default.createClass({
 	render: function render() {
 		return _react2.default.createElement(
 			"ul",
-			{ onDragOver: this.dragOver },
+			{ className: "team-list", onDragOver: this.dragOver },
 			this.state.teams.map(function (team, i) {
 				return _react2.default.createElement(
 					"li",
@@ -20013,16 +20088,23 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	handleChange: function handleChange(e) {
+		console.log(e.target.value);
 		this.setState({
 			selectedTeam: e.target.value
 		});
+		this.setUserTeam();
+		console.log('handle');
+	},
+	setTeam: function setTeam(team) {
+		this.setState({
+			selectedTeam: team
+		});
 	},
 	setUserTeam: function setUserTeam(e) {
-		e.preventDefault();
-		var teamSelect = this;
+		var setTeam = this.setTeam;
 		if (this.context.login && this.state.selectedTeam && this.props.userId) {
-			this.context.feathersApp.service('users').patch(this.props.userId, { team: this.state.selectedTeam }).then(function (result) {
-				console.log(result);
+			this.context.feathersApp.service('users').patch(this.props.userId, { team: e.target.value }).then(function (result) {
+				setTeam(result.team);
 			}).catch(function (error) {
 				console.error('Error submitting rankings!', error);
 			});
@@ -20030,28 +20112,87 @@ module.exports = _react2.default.createClass({
 	},
 	render: function render() {
 		return _react2.default.createElement(
-			"form",
-			{ onSubmit: this.setUserTeam },
-			_react2.default.createElement(
-				"select",
-				{ onChange: this.handleChange, value: this.state.selectedTeam },
-				this.state.teams.map(function (team, i) {
-					return _react2.default.createElement(
-						"option",
-						{
-							key: i,
-							value: team._id
-						},
-						team.location
-					);
-				}, this)
-			),
-			_react2.default.createElement("input", { type: "submit" })
+			"select",
+			{ className: "team-select", onChange: this.setUserTeam, value: this.state.selectedTeam },
+			this.state.teams.map(function (team, i) {
+				return _react2.default.createElement(
+					"option",
+					{
+						key: i,
+						value: team._id
+					},
+					team.location
+				);
+			}, this)
 		);
 	}
 });
 
 },{"react":165}],175:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return {
+			'users': []
+		};
+	},
+	setUsers: function setUsers(users) {
+		this.setState({
+			'users': users
+		});
+	},
+	componentDidMount: function componentDidMount() {
+		var setUsers = this.setUsers;
+		this.context.feathersApp.service('users').find({ 'query': { '$populate': 'team' } }).then(function (result) {
+			setUsers(result.data);
+		}).catch(function (error) {
+			console.error('Error getting users!', error);
+		});
+	},
+	render: function render() {
+		return _react2.default.createElement(
+			'ul',
+			null,
+			this.state.users.map(function (user, key) {
+				var adminText = user.admin ? "admin" : "";
+				return _react2.default.createElement(
+					'li',
+					{ key: key },
+					user.reddit.name,
+					_react2.default.createElement(
+						'ul',
+						null,
+						_react2.default.createElement(
+							'li',
+							null,
+							user.team.location
+						),
+						_react2.default.createElement(
+							'li',
+							null,
+							adminText
+						)
+					)
+				);
+			})
+		);
+	}
+});
+
+},{"react":165}],176:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20127,7 +20268,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":165}],176:[function(require,module,exports){
+},{"react":165}],177:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20168,6 +20309,7 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	render: function render() {
+		console.log(this.state);
 		return _react2.default.createElement(
 			'ul',
 			null,
@@ -20178,7 +20320,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./WeekItem":175,"react":165}],177:[function(require,module,exports){
+},{"./WeekItem":176,"react":165}],178:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20217,4 +20359,4 @@ function renderApp(login, username, userId, userTeam) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam }), document.getElementById('App'));
 }
 
-},{"./components/App":166,"react":165,"react-dom":28}]},{},[177]);
+},{"./components/App":166,"react":165,"react-dom":28}]},{},[178]);
