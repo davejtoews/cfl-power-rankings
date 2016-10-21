@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 var placeholder = document.createElement("li");
 placeholder.className = "placeholder";
@@ -58,8 +59,10 @@ module.exports = React.createClass({
 		return(
 			<ul className="team-list" onDragOver={this.dragOver}>
 		        {this.state.teams.map(function(team, i) {
+        			var teamClassName = classNames(team.location.toLowerCase());
 					return (
 						<li 
+							className={teamClassName}
 							key={i}
 							data-id={i}
 				            draggable="true"

@@ -204,22 +204,6 @@ html {
 *, *::after, *::before {
   box-sizing: inherit; }
 
-summary {
-  border-radius: 3px;
-  background-color: #b5262f;
-  color: #fff;
-  width: 4em;
-  line-height: 2.75em;
-  text-align: center;
-  margin-right: 1em; }
-  summary svg {
-    font-size: 1.5em;
-    position: relative;
-    top: 0.25em; }
-  summary:hover, summary:focus {
-    background-color: #911e26;
-    color: #fff; }
-
 .icon {
   display: inline-block;
   width: 1em;
@@ -257,6 +241,23 @@ header {
   vertical-align: top;
   width: 4em;
   white-space: nowrap; }
+  .week-details > summary {
+    border-radius: 3px;
+    background-color: #b5262f;
+    color: #fff;
+    width: 4em;
+    line-height: 2.75em;
+    text-align: center;
+    margin-right: 1em; }
+    .week-details > summary svg {
+      font-size: 1.5em;
+      position: relative;
+      top: 0.25em; }
+    .week-details > summary:hover, .week-details > summary:focus {
+      background-color: #911e26;
+      color: #fff; }
+  .week-details ul ul {
+    margin-left: 2em; }
 
 .login {
   position: absolute;
@@ -265,10 +266,71 @@ header {
   margin: 0.5em 1em; }
 
 main {
-  padding: 0.5em 1em;
-  text-align: center; }
+  text-align: center;
+  background: #ddd; }
+  main .button {
+    margin-bottom: 2em; }
+  @media all and (min-width: 1000px) {
+    main {
+      display: inline-block;
+      width: 66.6666666%;
+      vertical-align: top; } }
+
+.team-list {
+  padding: 1em;
+  font-size: 0.9em;
+  height: 29em; }
+  .team-list li {
+    max-width: 20em;
+    margin: 0 auto;
+    padding: 0.25em 0;
+    border-radius: 1em;
+    border: 0.25em solid;
+    color: #fff; }
+    .team-list li.bc {
+      background: #ed8B00;
+      border-color: #fff; }
+    .team-list li.calgary {
+      background: #c8102e;
+      border-color: #fff; }
+    .team-list li.edmonton {
+      background: #2c5234;
+      border-color: #ffb81c; }
+    .team-list li.hamilton {
+      background: #010101;
+      border-color: #ffb81c; }
+    .team-list li.montreal {
+      background: #003A70;
+      border-color: #862633; }
+    .team-list li.ottawa {
+      background: #a6192e;
+      border-color: #010101; }
+    .team-list li.saskatchewan {
+      background: #006341;
+      border-color: #fff; }
+    .team-list li.toronto {
+      background: #0c2340;
+      border-color: #5e90b0; }
+    .team-list li.winnipeg {
+      background: #003087;
+      border-color: #B9975b; }
+  .team-list .placeholder {
+    display: block; }
+    .team-list .placeholder:before {
+      content: 'drop here'; }
 
 .placeholder {
-  height: 1.5em; }
+  display: none; }
+
+aside {
+  padding: 2em;
+  text-align: right; }
+  @media all and (min-width: 1000px) {
+    aside {
+      vertical-align: top;
+      display: inline-block;
+      width: 33.333333%; } }
+  aside textarea {
+    font-size: 0.8em; }
 
 /*# sourceMappingURL=scss/maps/app.css.map */

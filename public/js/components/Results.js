@@ -137,7 +137,8 @@ module.exports = React.createClass({
 	},
 	render: function () {
 		return(
-			<div>
+			<aside>
+				<textarea rows="15" cols="75" value={this.state.markDown} />
 				<input type="text" value={this.state.lastWeekName} onChange={this.handleChange} />
 				<ResultsButton getRankings={this.getRankings} />
 				<ul>
@@ -147,8 +148,8 @@ module.exports = React.createClass({
 						);
 					})}
 				</ul>
-				<textarea rows="15" cols="75" value={this.state.markDown} />
-			</div>
+
+			</aside>
 		);
 	}
 });

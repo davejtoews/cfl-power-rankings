@@ -1,0 +1,14 @@
+aside {
+	padding: 2em;
+	text-align: right;
+
+	@media all and (min-width: 1000px) {
+		vertical-align: top;
+		display: inline-block;
+		width: 33.333333%;
+	}
+
+	textarea {
+		font-size: 0.8em;
+	}
+}
