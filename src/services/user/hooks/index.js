@@ -5,7 +5,9 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
 
 exports.before = {
-  all: [],
+  all: [
+    globalHooks.isAdmin()
+  ],
   find: [
     auth.verifyToken(),
     auth.populateUser(),
@@ -14,8 +16,7 @@ exports.before = {
   get: [
     auth.verifyToken(),
     auth.populateUser(),
-    auth.restrictToAuthenticated(),
-    auth.restrictToOwner({ ownerField: '_id' })
+    auth.restrictToAuthenticated()
   ],
   create: [
     auth.hashPassword()

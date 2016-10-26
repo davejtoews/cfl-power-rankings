@@ -28,11 +28,12 @@ module.exports = React.createClass({
 			<ul>
 				{this.state.users.map(function(user, key){
 					var adminText = (user.admin) ? "admin" : "";
+					var teamText = (user.team) ? user.team.location : "";
 					return(
 						<li key={key}>
 							{user.reddit.name}
 							<ul>
-								<li>{user.team.location}</li>
+								<li>{teamText}</li>
 								<li>{adminText}</li>
 							</ul>
 						</li>

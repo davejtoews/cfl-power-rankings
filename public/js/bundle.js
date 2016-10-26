@@ -19442,6 +19442,10 @@ var _UserList = require('./UserList');
 
 var _UserList2 = _interopRequireDefault(_UserList);
 
+var _NotificationBar = require('./NotificationBar');
+
+var _NotificationBar2 = _interopRequireDefault(_NotificationBar);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -19462,7 +19466,12 @@ module.exports = _react2.default.createClass({
 			week: '',
 			teams: [],
 			weekConfig: '',
-			submitted: false
+			submitted: false,
+			notification: {
+				type: false,
+				message: '',
+				time: 0
+			}
 		};
 	},
 	getInfo: function getInfo(currentWeekId) {
@@ -19495,7 +19504,8 @@ module.exports = _react2.default.createClass({
 		}
 		// Another check will be necessary once year update is set up
 		this.setState({
-			week: week
+			week: week,
+			submitted: false
 		});
 	},
 	setTeams: function setTeams(teams) {
@@ -19514,7 +19524,10 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	componentDidMount: function componentDidMount() {
-		if (this.props.login) {
+		if (!this.props.admin) {
+			this.setNotifications('error', 'You do not have ranker permissions, please contact /u/PickerPilgrim if this is in error.');
+		}
+		if (this.props.login && this.props.admin) {
 			var getInfo = this.getInfo;
 			var setWeekConfig = this.setWeekConfig;
 			this.props.feathersApp.service('configs').find({ query: { name: 'current_week' } }).then(function (result) {
@@ -19522,6 +19535,15 @@ module.exports = _react2.default.createClass({
 				getInfo(result.data[0].value);
 			});
 		}
+	},
+	setNotifications: function setNotifications(type, message) {
+		this.setState({
+			notification: {
+				type: type,
+				message: message,
+				time: Date.now()
+			}
+		});
 	},
 	render: function render() {
 		return _react2.default.createElement(
@@ -19537,10 +19559,17 @@ module.exports = _react2.default.createClass({
 					userId: this.props.userId,
 					userTeam: this.props.userTeam,
 					setWeek: this.setWeek,
-					weekConfig: this.state.weekConfig
+					weekConfig: this.state.weekConfig,
+					setNotifications: this.setNotifications,
+					submitted: this.state.submitted
 				}),
 				_react2.default.createElement(_LoginButton2.default, null)
 			),
+			_react2.default.createElement(_NotificationBar2.default, {
+				type: this.state.notification.type,
+				message: this.state.notification.message,
+				time: this.state.notification.time
+			}),
 			_react2.default.createElement(
 				'main',
 				null,
@@ -19553,7 +19582,8 @@ module.exports = _react2.default.createClass({
 					weekId: this.state.week._id,
 					userId: this.props.userId,
 					submitted: this.state.submitted,
-					setSubmitted: this.setSubmitted
+					setSubmitted: this.setSubmitted,
+					setNotifications: this.setNotifications
 				})
 			),
 			_react2.default.createElement(_Results2.default, {
@@ -19564,7 +19594,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./Info":168,"./LoginButton":169,"./Results":171,"./SubmitButton":173,"./TeamList":174,"./UserList":176,"react":166}],168:[function(require,module,exports){
+},{"./Info":168,"./LoginButton":169,"./NotificationBar":171,"./Results":172,"./SubmitButton":174,"./TeamList":175,"./UserList":177,"react":166}],168:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19620,11 +19650,15 @@ module.exports = _react2.default.createClass({
 						_react2.default.createElement('use', { xlinkHref: '#icon-info' })
 					)
 				),
-				_react2.default.createElement(_WeekList2.default, { yearId: yearId }),
+				_react2.default.createElement(_WeekList2.default, {
+					yearId: yearId,
+					submitted: this.props.submitted
+				}),
 				_react2.default.createElement(_NewWeek2.default, {
 					currentWeek: this.props.week,
 					setWeek: this.props.setWeek,
-					weekConfig: this.props.weekConfig
+					weekConfig: this.props.weekConfig,
+					setNotifications: this.props.setNotifications
 				})
 			),
 			_react2.default.createElement(
@@ -19650,13 +19684,14 @@ module.exports = _react2.default.createClass({
 			_react2.default.createElement(_TeamSelect2.default, {
 				teams: this.state.teams,
 				userId: this.props.userId,
-				userTeam: this.props.userTeam
+				userTeam: this.props.userTeam,
+				setNotifications: this.props.setNotifications
 			})
 		);
 	}
 });
 
-},{"./NewWeek":170,"./TeamSelect":175,"./WeekList":178,"react":166}],169:[function(require,module,exports){
+},{"./NewWeek":170,"./TeamSelect":176,"./WeekList":179,"react":166}],169:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19733,10 +19768,13 @@ module.exports = _react2.default.createClass({
 	},
 	updateCurrentWeek: function updateCurrentWeek(week) {
 		var setWeek = this.props.setWeek;
+		var setNotifications = this.props.setNotifications;
 		this.context.feathersApp.service('configs').patch(this.props.weekConfig, { value: week._id }).then(function (result) {
 			setWeek(week);
+			setNotifications('success', 'Current week updated.');
 		}).catch(function (error) {
 			console.error('Error updating current week!', error);
+			setNotifications('error', 'Problem updating week.');
 		});
 	},
 	render: function render() {
@@ -19754,6 +19792,78 @@ module.exports = _react2.default.createClass({
 });
 
 },{"react":166}],171:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	contextTypes: {
+		feathersApp: _react2.default.PropTypes.object,
+		login: _react2.default.PropTypes.bool
+	},
+	getInitialState: function getInitialState() {
+		return {
+			type: false,
+			message: '',
+			time: 0,
+			clear: false
+		};
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		var setNotifications = this.setNotifications;
+		var resetNotifications = this.resetNotifications;
+
+		if (this.state.time && this.state.time != nextProps.time) {
+			this.setState({
+				clear: 'clear'
+			});
+			setTimeout(function () {
+				resetNotifications();
+			}, 400);
+			setTimeout(function () {
+				setNotifications(nextProps.type, nextProps.message, nextProps.time);
+			}, 800);
+		} else {
+			setNotifications(nextProps.type, nextProps.message, nextProps.time);
+		}
+	},
+	setNotifications: function setNotifications(type, message, time) {
+		this.setState({
+			type: type,
+			message: message,
+			time: time,
+			clear: false
+		});
+	},
+	resetNotifications: function resetNotifications() {
+		this.setState({
+			clear: 'reset',
+			type: false
+		});
+	},
+	render: function render() {
+		var typeClass = this.state.type ? this.state.type + ' ' : '';
+		var clearClass = this.state.clear ? this.state.clear : '';
+		var notificationClasses = (0, _classnames2.default)('notification-bar ' + typeClass + clearClass);
+		return _react2.default.createElement(
+			'p',
+			{ className: notificationClasses },
+			this.state.message
+		);
+	}
+});
+
+},{"classnames":1,"react":166}],172:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19885,7 +19995,6 @@ module.exports = _react2.default.createClass({
 		return thisWeekResult.points - lastWeekResult.points;
 	},
 	createMarkDown: function createMarkDown(results) {
-		console.log('markdown');
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 		tableHead += "-:|-|-|-|-|-|-\n";
 		var tableRows = results.map(function (result, key) {
@@ -19927,7 +20036,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./ResultsButton":172,"react":166}],172:[function(require,module,exports){
+},{"./ResultsButton":173,"react":166}],173:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -19958,7 +20067,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":166}],173:[function(require,module,exports){
+},{"react":166}],174:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -19976,15 +20085,22 @@ module.exports = _react2.default.createClass({
 	},
 	getInitialState: function getInitialState() {
 		return {
-			user: this.props.userId,
-			ranks: [],
-			week: ''
+			submission: {
+				user: this.props.userId,
+				ranks: [],
+				week: ''
+			},
+			submitted: this.props.submitted
 		};
 	},
 	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 		this.setState({
-			ranks: this.getRankList(nextProps.teams),
-			week: nextProps.weekId
+			submission: {
+				user: this.props.userId,
+				ranks: this.getRankList(nextProps.teams),
+				week: nextProps.weekId
+			},
+			submitted: nextProps.submitted
 		});
 	},
 	getRankList: function getRankList(teams) {
@@ -19995,25 +20111,28 @@ module.exports = _react2.default.createClass({
 	handleClick: function handleClick(e) {
 		e.preventDefault();
 		var setSubmitted = this.props.setSubmitted;
-		if (this.context.login && this.state.ranks.length && this.state.week) {
-			if (this.props.submitted) {
-				this.context.feathersApp.service('rankings').patch(this.props.sumbitted, this.state).then(function (result) {
-					console.log(result);
+		var setNotifications = this.props.setNotifications;
+		if (this.context.login && this.state.submission.ranks.length && this.state.submission.week) {
+			if (this.state.submitted) {
+				this.context.feathersApp.service('rankings').patch(this.state.submitted, this.state.submission).then(function (result) {
+					setNotifications('success', 'Rankings updated.');
 				}).catch(function (error) {
 					console.error('Error updating rankings!', error);
+					setNotifications('error', 'Error updating rankings.');
 				});
 			} else {
-				this.context.feathersApp.service('rankings').create(this.state).then(function (result) {
+				this.context.feathersApp.service('rankings').create(this.state.submission).then(function (result) {
 					setSubmitted(result._id);
-					console.log(result);
+					setNotifications('success', 'Rankings submitted.');
 				}).catch(function (error) {
 					console.error('Error submitting rankings!', error);
+					setNotifications('error', 'Error submitting rankings.');
 				});
 			}
 		}
 	},
 	render: function render() {
-		var text = this.props.submitted ? 'Update' : 'Submit';
+		var text = this.state.submitted ? 'Update' : 'Submit';
 		return _react2.default.createElement(
 			'a',
 			{ href: '#', className: 'button', onClick: this.handleClick },
@@ -20022,7 +20141,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":166}],174:[function(require,module,exports){
+},{"react":166}],175:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20113,7 +20232,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"classnames":1,"react":166}],175:[function(require,module,exports){
+},{"classnames":1,"react":166}],176:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -20144,12 +20263,10 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	handleChange: function handleChange(e) {
-		console.log(e.target.value);
 		this.setState({
 			selectedTeam: e.target.value
 		});
 		this.setUserTeam();
-		console.log('handle');
 	},
 	setTeam: function setTeam(team) {
 		this.setState({
@@ -20158,11 +20275,14 @@ module.exports = _react2.default.createClass({
 	},
 	setUserTeam: function setUserTeam(e) {
 		var setTeam = this.setTeam;
-		if (this.context.login && this.state.selectedTeam && this.props.userId) {
+		var setNotifications = this.props.setNotifications;
+		if (this.context.login && this.props.userId) {
 			this.context.feathersApp.service('users').patch(this.props.userId, { team: e.target.value }).then(function (result) {
 				setTeam(result.team);
+				setNotifications('success', 'Team selection changed.');
 			}).catch(function (error) {
-				console.error('Error submitting rankings!', error);
+				console.error('Error selecting team!', error);
+				setNotifications('error', 'Problem selecting team.');
 			});
 		}
 	},
@@ -20184,7 +20304,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":166}],176:[function(require,module,exports){
+},{"react":166}],177:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20224,6 +20344,7 @@ module.exports = _react2.default.createClass({
 			null,
 			this.state.users.map(function (user, key) {
 				var adminText = user.admin ? "admin" : "";
+				var teamText = user.team ? user.team.location : "";
 				return _react2.default.createElement(
 					'li',
 					{ key: key },
@@ -20234,7 +20355,7 @@ module.exports = _react2.default.createClass({
 						_react2.default.createElement(
 							'li',
 							null,
-							user.team.location
+							teamText
 						),
 						_react2.default.createElement(
 							'li',
@@ -20248,7 +20369,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":166}],177:[function(require,module,exports){
+},{"react":166}],178:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20276,8 +20397,25 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	addRanker: function addRanker(ranker) {
-		var rankers = this.state.rankers;
+		var rankers = this.state.rankers.slice();
+		console.log({
+			push: 'before',
+			var: rankers,
+			state: this.state.rankers
+		});
+
 		rankers.push(ranker);
+		console.log({
+			push: 'after',
+			var: rankers,
+			state: this.state.rankers
+		});
+
+		this.setState({
+			rankers: rankers
+		});
+	},
+	setRankers: function setRankers(rankers) {
 		this.setState({
 			rankers: rankers
 		});
@@ -20286,10 +20424,39 @@ module.exports = _react2.default.createClass({
 		var setRankings = this.setRankings;
 		var addRanker = this.addRanker;
 		var context = this.context;
+		var setRankers = this.setRankers;
+		this.setState({
+			rankers: []
+		});
 		context.feathersApp.service('rankings').find({ query: { week: this.props.id } }).then(function (result) {
+			var rankers = [];
 			result.data.forEach(function (ranking) {
 				context.feathersApp.service('users').get(ranking.user, { query: { $populate: 'team' } }).then(function (result) {
-					addRanker(result);
+					rankers.push(result);
+					setRankers(rankers);
+				}).catch(function (error) {
+					console.error('Error getting user', error);
+				});
+			});
+			setRankings(result.total);
+		}).catch(function (error) {
+			console.error('Error getting this week\'s rankings!', error);
+		});
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		var setRankings = this.setRankings;
+		var addRanker = this.addRanker;
+		var context = this.context;
+		var setRankers = this.setRankers;
+		this.setState({
+			rankers: []
+		});
+		context.feathersApp.service('rankings').find({ query: { week: this.props.id } }).then(function (result) {
+			var rankers = [];
+			result.data.forEach(function (ranking) {
+				context.feathersApp.service('users').get(ranking.user, { query: { $populate: 'team' } }).then(function (result) {
+					rankers.push(result);
+					setRankers(rankers);
 				}).catch(function (error) {
 					console.error('Error getting user', error);
 				});
@@ -20332,7 +20499,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":166}],178:[function(require,module,exports){
+},{"react":166}],179:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20373,7 +20540,6 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	render: function render() {
-		console.log(this.state);
 		return _react2.default.createElement(
 			'ul',
 			null,
@@ -20384,7 +20550,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./WeekItem":177,"react":166}],179:[function(require,module,exports){
+},{"./WeekItem":178,"react":166}],180:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20409,7 +20575,7 @@ var feathersApp = feathers().configure(feathers.socketio(socket)).configure(feat
 // Authenticating using a token
 feathersApp.authenticate().then(function (result) {
 		console.log('Authenticated!', feathersApp.get('token'));
-		renderApp(true, result.data.reddit.name, result.data._id, result.data.team);
+		renderApp(true, result.data.reddit.name, result.data._id, result.data.team, result.data.admin);
 }).catch(function (error) {
 		console.error('Error authenticating!', error);
 		renderApp(false, 'unknown');
@@ -20419,8 +20585,8 @@ feathersApp.authenticate().then(function (result) {
 var host = 'http://localhost:3030';
 var socket = io(host);
 
-function renderApp(login, username, userId, userTeam) {
-		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam }), document.getElementById('App'));
+function renderApp(login, username, userId, userTeam, admin) {
+		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam, admin: admin }), document.getElementById('App'));
 }
 
-},{"./components/App":167,"react":166,"react-dom":29}]},{},[179]);
+},{"./components/App":167,"react":166,"react-dom":29}]},{},[180]);

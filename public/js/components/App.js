@@ -5,6 +5,7 @@ import TeamList from './TeamList';
 import SubmitButton from './SubmitButton';
 import Results from './Results';
 import UserList from './UserList';
+import NotificationBar from './NotificationBar';
 
 module.exports = React.createClass({
 	childContextTypes: {
@@ -22,7 +23,12 @@ module.exports = React.createClass({
 			week: '',
 			teams: [],
 			weekConfig: '',
-			submitted: false
+			submitted: false,
+			notification: {
+				type: false,
+				message: '',
+				time: 0
+			}
 		}
 	},
 	getInfo: function(currentWeekId) {
@@ -55,7 +61,8 @@ module.exports = React.createClass({
 		}
 		// Another check will be necessary once year update is set up
 		this.setState({
-			week: week
+			week: week,
+			submitted: false
 		});	
 	},
 	setTeams: function(teams) {
@@ -74,7 +81,10 @@ module.exports = React.createClass({
 		});
 	},
 	componentDidMount: function() {
-		if (this.props.login) {
+		if(!this.props.admin) {
+			this.setNotifications('error', 'You do not have ranker permissions, please contact /u/PickerPilgrim if this is in error.');
+		}
+		if (this.props.login && this.props.admin) {
 			var getInfo = this.getInfo;
 			var setWeekConfig = this.setWeekConfig;
 			this.props.feathersApp.service('configs').find({query: { name: 'current_week'}}).then(function(result){
@@ -82,6 +92,15 @@ module.exports = React.createClass({
 				getInfo(result.data[0].value);
 			});
 		}
+	},
+	setNotifications: function(type, message) {
+		this.setState({
+			notification: {
+				type: type,
+				message: message,
+				time: Date.now()
+			}
+		})
 	},
 	render: function () {
 		return(
@@ -95,9 +114,16 @@ module.exports = React.createClass({
 						userTeam={this.props.userTeam}
 						setWeek={this.setWeek}
 						weekConfig={this.state.weekConfig}
+						setNotifications={this.setNotifications}
+						submitted={this.state.submitted}
 					/>
 					<LoginButton />
 				</header>
+				<NotificationBar
+					type={this.state.notification.type}
+					message={this.state.notification.message}
+					time={this.state.notification.time}
+				/>
 				<main>
 					<TeamList 
 						teams={this.state.teams} 
@@ -109,6 +135,7 @@ module.exports = React.createClass({
 						userId={this.props.userId}
 						submitted={this.state.submitted}
 						setSubmitted={this.setSubmitted}
+						setNotifications={this.setNotifications}
 					/>
 				</main>
 

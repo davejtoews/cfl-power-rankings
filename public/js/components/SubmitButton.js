@@ -7,15 +7,22 @@ module.exports = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			user: this.props.userId,
-			ranks: [],
-			week: ''
+			submission: {
+				user: this.props.userId,
+				ranks: [],
+				week: ''		
+			},
+			submitted: this.props.submitted
 		};
 	},
 	componentWillReceiveProps: function (nextProps) {
 		this.setState({
-			ranks: this.getRankList(nextProps.teams),
-			week: nextProps.weekId
+			submission: {
+				user: this.props.userId,
+				ranks: this.getRankList(nextProps.teams),
+				week: nextProps.weekId
+			},
+			submitted: nextProps.submitted
 		});	
 	},
 	getRankList : function(teams) {
@@ -26,25 +33,28 @@ module.exports = React.createClass({
 	handleClick: function(e) {
 		e.preventDefault();
 		var setSubmitted = this.props.setSubmitted;
-		if (this.context.login && this.state.ranks.length  && this.state.week) {
-			if (this.props.submitted) {
-				this.context.feathersApp.service('rankings').patch(this.props.sumbitted, this.state).then(function(result){
-					console.log(result);
+		var setNotifications = this.props.setNotifications;
+		if (this.context.login && this.state.submission.ranks.length  && this.state.submission.week) {
+			if (this.state.submitted) {
+				this.context.feathersApp.service('rankings').patch(this.state.submitted, this.state.submission).then(function(result){
+					setNotifications('success', 'Rankings updated.');
 				}).catch(function(error){
 					console.error('Error updating rankings!', error);
+					setNotifications('error', 'Error updating rankings.');
 				});
 			} else {
-				this.context.feathersApp.service('rankings').create(this.state).then(function(result){
+				this.context.feathersApp.service('rankings').create(this.state.submission).then(function(result){
 					setSubmitted(result._id);
-					console.log(result);
+					setNotifications('success', 'Rankings submitted.');
 				}).catch(function(error){
 					console.error('Error submitting rankings!', error);
+					setNotifications('error', 'Error submitting rankings.');
 				});				
 			}
 		}
 	},
 	render: function () {
-		var text = (this.props.submitted) ? 'Update' : 'Submit';
+		var text = (this.state.submitted) ? 'Update' : 'Submit';
 		return(
 			<a href="#" className="button" onClick={ this.handleClick }>{text}</a>
 		);

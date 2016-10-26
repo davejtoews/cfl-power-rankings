@@ -1,6 +1,7 @@
 main {
 	text-align: center;
 	background: $light-gray;
+	padding-top: 4em;
 
 	.button {
 		margin-bottom: 2em;
@@ -15,7 +16,7 @@ main {
 	.team-list {
 		padding: 1em;
 		font-size: 0.9em;
-		height: 29em;
+		height: 25em;
 
 		li {
 			max-width: 20em;

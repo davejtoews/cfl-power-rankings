@@ -117,7 +117,6 @@ module.exports = React.createClass({
 		return thisWeekResult.points - lastWeekResult.points;
 	},
 	createMarkDown: function(results) {
-		console.log('markdown');
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 			tableHead += "-:|-|-|-|-|-|-\n";
 		var tableRows = results.map(function(result, key) {

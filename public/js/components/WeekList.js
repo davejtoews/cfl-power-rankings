@@ -27,7 +27,6 @@ module.exports = React.createClass({
 		});
 	},
 	render: function () {
-		console.log(this.state);
 		return(
 			<ul>
 		        {this.state.weeks.map(function(week, i) {

@@ -20,12 +20,10 @@ module.exports = React.createClass({
 		});	
 	},
 	handleChange: function (e) {
-		console.log(e.target.value);
 		this.setState({
 			selectedTeam: e.target.value
 		});
 		this.setUserTeam();
-		console.log('handle');
 	},
 	setTeam: function(team) {
 		this.setState({
@@ -34,13 +32,16 @@ module.exports = React.createClass({
 	},
 	setUserTeam: function (e) {
 		var setTeam = this.setTeam;
-		if (this.context.login && this.state.selectedTeam && this.props.userId) {
+		var setNotifications = this.props.setNotifications;
+		if (this.context.login && this.props.userId) {
 			this.context.feathersApp.service('users')
 				.patch(this.props.userId, {team: e.target.value})
 				.then(function(result){
 					setTeam(result.team);
+					setNotifications('success', 'Team selection changed.');
 				}).catch(function(error){
-					console.error('Error submitting rankings!', error);
+					console.error('Error selecting team!', error);
+					setNotifications('error', 'Problem selecting team.');
 				});
 		}
 	},

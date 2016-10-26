@@ -28,10 +28,13 @@ module.exports = React.createClass({
 	},
 	updateCurrentWeek: function(week) {
 		var setWeek = this.props.setWeek;
+		var setNotifications = this.props.setNotifications;
 		this.context.feathersApp.service('configs').patch(this.props.weekConfig, {value: week._id}).then(function(result){
 			setWeek(week);
+			setNotifications('success', 'Current week updated.');
 		}).catch(function(error){
 			console.error('Error updating current week!', error);
+			setNotifications('error', 'Problem updating week.');
 		});
 	},
 	render: function() {

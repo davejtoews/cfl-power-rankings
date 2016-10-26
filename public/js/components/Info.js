@@ -29,11 +29,15 @@ module.exports = React.createClass({
 							<use xlinkHref="#icon-info"></use>
 						</svg>
 					</summary>
-					<WeekList yearId={yearId}/>
+					<WeekList 
+						yearId={yearId}
+						submitted={this.props.submitted}
+					/>
 					<NewWeek
 						currentWeek={this.props.week}
 						setWeek={this.props.setWeek}
 						weekConfig={this.props.weekConfig}
+						setNotifications={this.props.setNotifications}
 					/>
 				</details>
 				<ul className="info-list">
@@ -45,6 +49,7 @@ module.exports = React.createClass({
 					teams={this.state.teams} 
 					userId={this.props.userId} 
 					userTeam={this.props.userTeam}
+					setNotifications={this.props.setNotifications}
 				/>
 
 			</section>

@@ -212,6 +212,10 @@ html {
   stroke: currentColor;
   fill: currentColor; }
 
+body {
+  max-width: 100%;
+  overflow-x: hidden; }
+
 header {
   padding: 0.5em 1em;
   position: relative;
@@ -267,7 +271,8 @@ header {
 
 main {
   text-align: center;
-  background: #ddd; }
+  background: #ddd;
+  padding-top: 4em; }
   main .button {
     margin-bottom: 2em; }
   @media all and (min-width: 1000px) {
@@ -279,7 +284,7 @@ main {
 .team-list {
   padding: 1em;
   font-size: 0.9em;
-  height: 29em; }
+  height: 25em; }
   .team-list li {
     max-width: 20em;
     margin: 0 auto;
@@ -323,7 +328,7 @@ main {
   display: none; }
 
 aside {
-  padding: 2em;
+  padding: 6em 2em 2em;
   text-align: right; }
   @media all and (min-width: 1000px) {
     aside {
@@ -332,5 +337,26 @@ aside {
       width: 33.333333%; } }
   aside textarea {
     font-size: 0.8em; }
+
+.notification-bar {
+  position: absolute;
+  padding: 0.75em;
+  color: #fff;
+  width: 100%;
+  font-weight: bold;
+  text-align: center;
+  right: 100%;
+  -webkit-transition: right 0.4s;
+  transition: right 0.4s; }
+  .notification-bar.success {
+    background-color: #00CC77;
+    right: 0; }
+  .notification-bar.error {
+    background-color: #CC5500;
+    right: 0; }
+  .notification-bar.clear {
+    right: -100% !important; }
+  .notification-bar.reset {
+    color: rgba(255, 255, 255, 0); }
 
 /*# sourceMappingURL=scss/maps/app.css.map */
