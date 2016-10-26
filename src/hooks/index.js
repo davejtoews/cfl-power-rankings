@@ -8,7 +8,7 @@
 
 exports.isAdmin = function(options) {
   return function(hook) {
-	if (!hook.params.user.admin) {
+	if (!hook.params.user || !hook.params.user.admin) {
 		throw new _feathersErrors2.default.NotAuthenticated('Information only available to admin.');
 	}
   };
