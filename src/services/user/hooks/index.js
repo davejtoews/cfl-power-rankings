@@ -6,9 +6,7 @@ const auth = require('feathers-authentication').hooks;
 const service = require('feathers-mongoose');
 
 exports.before = {
-  all: [
-    service.hooks.toObject({})
-  ],
+  all: [],
   find: [
     auth.verifyToken(),
     auth.populateUser(),
@@ -43,7 +41,10 @@ exports.before = {
 };
 
 exports.after = {
-  all: [hooks.remove('password')],
+  all: [
+    hooks.remove('password'),
+    service.hooks.toObject({})
+  ],
   find: [],
   get: [],
   create: [],
