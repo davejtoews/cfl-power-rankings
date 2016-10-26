@@ -20589,7 +20589,7 @@ var _App2 = _interopRequireDefault(_App);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Set up socket.io
-var host = 'http://localhost:3030';
+var host = 'http://rankings.pickerpilgrim.com';
 var socket = io(host);
 
 // Set up Feathers client side
@@ -20605,7 +20605,7 @@ feathersApp.authenticate().then(function (result) {
 });
 
 // Set up socket.io
-var host = 'http://localhost:3030';
+var host = 'http://rankings.pickerpilgrim.com';
 var socket = io(host);
 
 function renderApp(login, username, userId, userTeam, admin) {
