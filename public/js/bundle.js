@@ -19780,12 +19780,17 @@ module.exports = _react2.default.createClass({
 	render: function render() {
 		return _react2.default.createElement(
 			'form',
-			{ onSubmit: this.handleSubmit },
-			_react2.default.createElement('input', { type: 'text', onChange: this.handleChange, value: this.state.newWeekName }),
+			{ className: 'new-week-form', onSubmit: this.handleSubmit },
+			_react2.default.createElement(
+				'label',
+				{ htmlFor: 'new-week-name' },
+				'New Week'
+			),
+			_react2.default.createElement('input', { name: 'new-week-name', id: 'new-week-name', type: 'text', onChange: this.handleChange, value: this.state.newWeekName }),
 			_react2.default.createElement(
 				'button',
 				{ type: 'submit' },
-				'New Week'
+				'Update Week'
 			)
 		);
 	}
@@ -20017,8 +20022,17 @@ module.exports = _react2.default.createClass({
 			'aside',
 			null,
 			_react2.default.createElement('textarea', { rows: '15', cols: '75', value: this.state.markDown }),
-			_react2.default.createElement('input', { type: 'text', value: this.state.lastWeekName, onChange: this.handleChange }),
-			_react2.default.createElement(_ResultsButton2.default, { getRankings: this.getRankings }),
+			_react2.default.createElement(
+				'form',
+				{ className: 'results-form' },
+				_react2.default.createElement(
+					'label',
+					{ htmlFor: 'last-week-name' },
+					'Last Week'
+				),
+				_react2.default.createElement('input', { name: 'last-week-name', id: 'last-week-name', type: 'text', value: this.state.lastWeekName, onChange: this.handleChange }),
+				_react2.default.createElement(_ResultsButton2.default, { getRankings: this.getRankings })
+			),
 			_react2.default.createElement(
 				'ul',
 				null,
@@ -20340,31 +20354,40 @@ module.exports = _react2.default.createClass({
 	},
 	render: function render() {
 		return _react2.default.createElement(
-			'ul',
-			null,
-			this.state.users.map(function (user, key) {
-				var adminText = user.admin ? "admin" : "";
-				var teamText = user.team ? user.team.location : "";
-				return _react2.default.createElement(
-					'li',
-					{ key: key },
-					user.reddit.name,
-					_react2.default.createElement(
-						'ul',
-						null,
+			'div',
+			{ className: 'user-list' },
+			_react2.default.createElement(
+				'h3',
+				null,
+				'User list'
+			),
+			_react2.default.createElement(
+				'ul',
+				null,
+				this.state.users.map(function (user, key) {
+					var adminText = user.admin ? "admin" : "";
+					var teamText = user.team ? user.team.location : "";
+					return _react2.default.createElement(
+						'li',
+						{ key: key },
+						user.reddit.name,
 						_react2.default.createElement(
-							'li',
+							'ul',
 							null,
-							teamText
-						),
-						_react2.default.createElement(
-							'li',
-							null,
-							adminText
+							_react2.default.createElement(
+								'li',
+								null,
+								teamText
+							),
+							_react2.default.createElement(
+								'li',
+								null,
+								adminText
+							)
 						)
-					)
-				);
-			})
+					);
+				})
+			)
 		);
 	}
 });

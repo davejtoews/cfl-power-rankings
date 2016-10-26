@@ -260,8 +260,27 @@ header {
     .week-details > summary:hover, .week-details > summary:focus {
       background-color: #911e26;
       color: #fff; }
-  .week-details ul ul {
-    margin-left: 2em; }
+  .week-details > ul {
+    margin-top: 1em; }
+    .week-details > ul ul {
+      margin-left: 2em; }
+
+.new-week-form {
+  padding: 0.5em;
+  background-color: #999;
+  width: 10em;
+  margin-top: 1em; }
+  .new-week-form label, .new-week-form input {
+    display: inline-block;
+    margin-right: 1em;
+    color: #333; }
+  .new-week-form label {
+    width: 6em; }
+  .new-week-form input {
+    width: 3em; }
+  .new-week-form button, .new-week-form .button {
+    display: block;
+    width: 7em; }
 
 .login {
   position: absolute;
@@ -338,6 +357,18 @@ aside {
   aside textarea {
     font-size: 0.8em; }
 
+.results-form label, .results-form input {
+  display: inline-block; }
+
+.results-form input {
+  width: 4em;
+  margin-left: 1em; }
+
+.results-form .button {
+  display: block;
+  width: 7em;
+  margin: 0 0 0 auto; }
+
 .notification-bar {
   position: absolute;
   padding: 0.75em;
@@ -358,5 +389,10 @@ aside {
     right: -100% !important; }
   .notification-bar.reset {
     color: rgba(255, 255, 255, 0); }
+
+.user-list {
+  padding: 1.5em 1em; }
+  .user-list ul ul {
+    margin-left: 2em; }
 
 /*# sourceMappingURL=scss/maps/app.css.map */

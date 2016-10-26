@@ -1,0 +1,28 @@
+.notification-bar {
+	position: absolute;
+	padding: 0.75em;
+	color: #fff;
+	width: 100%;
+	font-weight: bold;
+	text-align: center;
+	right: 100%;
+	transition: right 0.4s;
+
+	&.success {
+		background-color: #00CC77;
+		right: 0;
+	}
+
+	&.error {
+		background-color: #CC5500;
+		right: 0;
+	}
+
+	&.clear {
+		right: -100% !important;
+	}
+
+	&.reset {
+		color: rgba(255,255,255, 0);
+	}
+}

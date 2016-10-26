@@ -12,3 +12,20 @@ aside {
 		font-size: 0.8em;
 	}
 }
+
+	.results-form {
+		label, input {
+			display: inline-block;
+		}
+
+		input {
+			width: 4em;
+			margin-left: 1em;
+		}
+
+		.button {
+			display: block;
+			width: 7em;
+			margin: 0 0 0 auto;
+		}
+	}

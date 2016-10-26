@@ -39,9 +39,10 @@ module.exports = React.createClass({
 	},
 	render: function() {
 		return(
-			<form onSubmit={this.handleSubmit}>
-				<input type="text" onChange={this.handleChange} value={this.state.newWeekName}/>
-				<button type="submit">New Week</button>
+			<form className="new-week-form" onSubmit={this.handleSubmit}>
+				<label htmlFor="new-week-name">New Week</label>
+				<input name="new-week-name" id="new-week-name" type="text" onChange={this.handleChange} value={this.state.newWeekName}/>
+				<button type="submit">Update Week</button>
 			</form>
 		);
 	}

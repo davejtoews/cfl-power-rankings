@@ -35,6 +35,7 @@
     "feathers-rest": "^1.2.5",
     "feathers-socketio": "^1.3.4",
     "mongoose": "^4.4.12",
+    "node-fetch": "^1.6.3",
     "passport": "^0.3.2",
     "passport-reddit": "^0.2.4",
     "passport-reddit-token": "^2.1.0",

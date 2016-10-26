@@ -138,8 +138,11 @@ module.exports = React.createClass({
 		return(
 			<aside>
 				<textarea rows="15" cols="75" value={this.state.markDown} />
-				<input type="text" value={this.state.lastWeekName} onChange={this.handleChange} />
-				<ResultsButton getRankings={this.getRankings} />
+				<form className="results-form">
+					<label htmlFor="last-week-name">Last Week</label>
+					<input name="last-week-name" id="last-week-name" type="text" value={this.state.lastWeekName} onChange={this.handleChange} />
+					<ResultsButton getRankings={this.getRankings} />
+				</form>
 				<ul>
 					{this.state.results.map(function(result, key){
 						return (

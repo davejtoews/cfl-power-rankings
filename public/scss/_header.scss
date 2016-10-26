@@ -55,10 +55,39 @@ header {
 				}
 			}
 
-			ul ul {
-				margin-left: 2em;
+			& > ul {
+				margin-top: 1em;
+				ul {
+					margin-left: 2em;
+				}
 			}
 		}
+
+			.new-week-form {
+				padding: 0.5em;
+				background-color: $medium-gray;
+				width: 10em;
+				margin-top: 1em;
+
+				label, input {
+					display: inline-block;
+					margin-right: 1em;
+					color: $dark-gray;
+				}
+
+				label {
+					width: 6em;
+				}
+
+				input {
+					width: 3em;
+				}
+
+				button{
+					display: block;
+					width: 7em;
+				}
+			}
 
 	.login {
 		position: absolute;

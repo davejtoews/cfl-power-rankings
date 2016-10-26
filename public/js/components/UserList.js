@@ -25,21 +25,24 @@ module.exports = React.createClass({
 	},
 	render: function () {
 		return(
-			<ul>
-				{this.state.users.map(function(user, key){
-					var adminText = (user.admin) ? "admin" : "";
-					var teamText = (user.team) ? user.team.location : "";
-					return(
-						<li key={key}>
-							{user.reddit.name}
-							<ul>
-								<li>{teamText}</li>
-								<li>{adminText}</li>
-							</ul>
-						</li>
-					);
-				})}
-			</ul>
+			<div className="user-list">
+				<h3>User list</h3>
+				<ul>
+					{this.state.users.map(function(user, key){
+						var adminText = (user.admin) ? "admin" : "";
+						var teamText = (user.team) ? user.team.location : "";
+						return(
+							<li key={key}>
+								{user.reddit.name}
+								<ul>
+									<li>{teamText}</li>
+									<li>{adminText}</li>
+								</ul>
+							</li>
+						);
+					})}
+				</ul>
+			</div>
 		);
 	}
 });
