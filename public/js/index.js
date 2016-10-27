@@ -1,9 +1,10 @@
 import React from 'react';
 import { render } from 'react-dom';
 import App from './components/App';
+import Config from './config.js';
 
 // Set up socket.io
-var host = 'http://rankings.pickerpilgrim.com';
+var host = Config.host;
 var socket = io(host);
 
 // Set up Feathers client side
@@ -20,10 +21,6 @@ feathersApp.authenticate().then(function(result){
   console.error('Error authenticating!', error);
   renderApp(false,'unknown');
 });
-
-// Set up socket.io
-var host = 'http://rankings.pickerpilgrim.com';
-var socket = io(host);
 
 function renderApp(login, username, userId, userTeam, admin ) {
 	render(

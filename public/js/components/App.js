@@ -81,10 +81,11 @@ module.exports = React.createClass({
 		});
 	},
 	componentDidMount: function() {
-		if(!this.props.admin) {
+		if(!this.props.login) {
+			this.setNotifications('error', 'Please login to access this app.')
+		} else if (!this.props.admin) {
 			this.setNotifications('error', 'You do not have ranker permissions, please contact /u/PickerPilgrim if this is in error.');
-		}
-		if (this.props.login && this.props.admin) {
+		} else {
 			var getInfo = this.getInfo;
 			var setWeekConfig = this.setWeekConfig;
 			this.props.feathersApp.service('configs').find({query: { name: 'current_week'}}).then(function(result){

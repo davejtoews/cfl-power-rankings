@@ -41,3 +41,4 @@ data/
 
 config/default.json
 config/production.json
+public/js/config.js

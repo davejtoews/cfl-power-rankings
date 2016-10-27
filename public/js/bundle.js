@@ -19524,10 +19524,11 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	componentDidMount: function componentDidMount() {
-		if (!this.props.admin) {
+		if (!this.props.login) {
+			this.setNotifications('error', 'Please login to access this app.');
+		} else if (!this.props.admin) {
 			this.setNotifications('error', 'You do not have ranker permissions, please contact /u/PickerPilgrim if this is in error.');
-		}
-		if (this.props.login && this.props.admin) {
+		} else {
 			var getInfo = this.getInfo;
 			var setWeekConfig = this.setWeekConfig;
 			this.props.feathersApp.service('configs').find({ query: { name: 'current_week' } }).then(function (result) {
@@ -20574,6 +20575,13 @@ module.exports = _react2.default.createClass({
 });
 
 },{"./WeekItem":178,"react":166}],180:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+	"host": "http://localhost:3030"
+};
+
+},{}],181:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20586,10 +20594,14 @@ var _App = require('./components/App');
 
 var _App2 = _interopRequireDefault(_App);
 
+var _config = require('./config.js');
+
+var _config2 = _interopRequireDefault(_config);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Set up socket.io
-var host = 'http://rankings.pickerpilgrim.com';
+var host = _config2.default.host;
 var socket = io(host);
 
 // Set up Feathers client side
@@ -20604,12 +20616,8 @@ feathersApp.authenticate().then(function (result) {
 		renderApp(false, 'unknown');
 });
 
-// Set up socket.io
-var host = 'http://rankings.pickerpilgrim.com';
-var socket = io(host);
-
 function renderApp(login, username, userId, userTeam, admin) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam, admin: admin }), document.getElementById('App'));
 }
 
-},{"./components/App":167,"react":166,"react-dom":29}]},{},[180]);
+},{"./components/App":167,"./config.js":180,"react":166,"react-dom":29}]},{},[181]);
