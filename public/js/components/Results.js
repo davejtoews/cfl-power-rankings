@@ -55,22 +55,24 @@ module.exports = React.createClass({
 		});
 	},
 	setLastWeekResults: function(rankings) {
+		var count = rankings.length;
 		var results = this.state.results;
 		this.setState({
-			lastWeekResults: this.tabulateRankings(rankings)
+			lastWeekResults: this.tabulateRankings(rankings, count)
 		});
 		this.setState({
 			markDown: this.createMarkDown(results)
 		})
 	},
 	setRankings: function(rankings) {
-		var results = this.tabulateRankings(rankings);
+		var count = rankings.length;
+		var results = this.tabulateRankings(rankings, count);
 		this.setState({
-			results: results,
+			results: results.results,
 			markDown: this.createMarkDown(results)
 		});
 	},
-	tabulateRankings: function(rankings) {
+	tabulateRankings: function(rankings, count) {
 		var results = {};
 		var teams = [];
 		rankings.forEach(function(ranking) {
@@ -103,7 +105,7 @@ module.exports = React.createClass({
 			return 0;
 		});
 
-		return sortedResults;
+		return {results: sortedResults, count: count};
 	},
 	getDelta: function(thisWeekResult) {
 		var lastWeekResult;
@@ -119,12 +121,12 @@ module.exports = React.createClass({
 	createMarkDown: function(results) {
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 			tableHead += "-:|-|-|-|-|-|-\n";
-		var tableRows = results.map(function(result, key) {
+		var tableRows = results.results.map(function(result, key) {
 			var delta = 0;
 			if(this.state.lastWeekResults.length) {
 				delta = this.getDelta(result);
 			}	
-			return (key + 1) + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ result.points +"|" + "\n";
+			return (key + 1) + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ result.points / results.count +"|" + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');
 		return tableHead + tableBody;
