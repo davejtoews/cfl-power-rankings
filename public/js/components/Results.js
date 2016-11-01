@@ -125,8 +125,9 @@ module.exports = React.createClass({
 			var delta = 0;
 			if(this.state.lastWeekResults.length) {
 				delta = this.getDelta(result);
-			}	
-			return (key + 1) + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ result.points / results.count +"|" + "\n";
+			}
+			var average = Math.round(result.points / results.count * 100) / 100;
+			return (key + 1) + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ average +"|" + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');
 		return tableHead + tableBody;
