@@ -21935,6 +21935,10 @@ module.exports = _react2.default.createClass({
 			console.error('Error getting this week\'s rankings!', error);
 		});
 	},
+	handleClick: function handleClick(e) {
+		console.log(e.target);
+	},
+
 	render: function render() {
 		return _react2.default.createElement(
 			'li',
@@ -21954,15 +21958,14 @@ module.exports = _react2.default.createClass({
 					'ul',
 					null,
 					this.state.rankers.map(function (ranker, key) {
-						console.log(ranker);
 						return _react2.default.createElement(
 							'li',
-							{ key: key },
+							{ key: key, 'data-week': this.props.id, 'data-ranker': ranker._id, onClick: this.handleClick },
 							ranker.reddit.name,
 							': ',
 							ranker.team.nickname
 						);
-					})
+					}, this)
 				)
 			)
 		);

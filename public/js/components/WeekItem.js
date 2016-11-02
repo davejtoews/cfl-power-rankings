@@ -86,6 +86,9 @@ module.exports = React.createClass({
 				console.error('Error getting this week\'s rankings!', error);
 		});
 	},
+	handleClick(e) {
+		console.log(e.target);
+	}, 
 	render: function() {
 		return(
 			<li>
@@ -93,11 +96,10 @@ module.exports = React.createClass({
 					<summary>Week: {this.props.name} Rankings: {this.state.rankings}</summary>
 					<ul>
 						{this.state.rankers.map(function(ranker, key){
-							console.log(ranker);
 							return (
-								<li key={key} >{ranker.reddit.name}: {ranker.team.nickname}</li>
+								<li key={key} data-week={this.props.id} data-ranker={ranker._id} onClick={this.handleClick}>{ranker.reddit.name}: {ranker.team.nickname}</li>
 							);
-						})}
+						}, (this))}
 					</ul>
 				</details>
 
