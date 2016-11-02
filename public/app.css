@@ -216,6 +216,11 @@ body {
   max-width: 100%;
   overflow-x: hidden; }
 
+pre {
+  background: url("images/prebg.gif");
+  background-size: 1px 4em;
+  line-height: 2em; }
+
 header {
   padding: 0.5em 1em;
   position: relative;
@@ -291,14 +296,14 @@ header {
 main {
   text-align: center;
   background: #ddd;
-  padding-top: 4em; }
-  main .button {
-    margin-bottom: 2em; }
+  padding: 4em 2em 2em; }
   @media all and (min-width: 1000px) {
     main {
       display: inline-block;
       width: 66.6666666%;
       vertical-align: top; } }
+  main textarea {
+    margin-bottom: 2em; }
 
 .team-list {
   padding: 1em;

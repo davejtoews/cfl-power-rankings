@@ -90,8 +90,9 @@ module.exports = React.createClass({
 							'flair': rank.flair
 						}					
 					}
-
+					
 				});
+				results[ranking.user.team]['blurb'] = ranking.blurb;
 			}
 		});
 		var resultArray = Object.keys(results).map(key => results[key]);
@@ -127,7 +128,8 @@ module.exports = React.createClass({
 				delta = this.getDelta(result);
 			}
 			var average = Math.round(result.points / results.count * 100) / 100;
-			return (key + 1) + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ average +"|" + "\n";
+			var blurb = (result.blurb) ? result.blurb : '';
+			return (key + 1) + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ average +"|" + blurb + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');
 		return tableHead + tableBody;

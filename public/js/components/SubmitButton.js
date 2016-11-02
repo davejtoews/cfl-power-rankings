@@ -10,9 +10,10 @@ module.exports = React.createClass({
 			submission: {
 				user: this.props.userId,
 				ranks: [],
-				week: ''		
+				week: '',
+				blurb: ''		
 			},
-			submitted: this.props.submitted
+			submitted: this.props.submitted,
 		};
 	},
 	componentWillReceiveProps: function (nextProps) {
@@ -20,7 +21,8 @@ module.exports = React.createClass({
 			submission: {
 				user: this.props.userId,
 				ranks: this.getRankList(nextProps.teams),
-				week: nextProps.weekId
+				week: nextProps.weekId,
+				blurb: nextProps.blurb
 			},
 			submitted: nextProps.submitted
 		});	

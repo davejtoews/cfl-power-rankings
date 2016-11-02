@@ -20840,6 +20840,10 @@ var _NotificationBar = require('./NotificationBar');
 
 var _NotificationBar2 = _interopRequireDefault(_NotificationBar);
 
+var _Blurb = require('./Blurb');
+
+var _Blurb2 = _interopRequireDefault(_Blurb);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _react2.default.createClass({
@@ -20873,6 +20877,7 @@ module.exports = _react2.default.createClass({
 		var setTeams = this.setTeams;
 		var getTeams = this.getTeams;
 		var setSubmitted = this.setSubmitted;
+		var setBlurb = this.setBlurb;
 
 		this.props.feathersApp.service('weeks').get(currentWeekId, { query: { $populate: 'year' } }).then(function (result) {
 			setWeek(result);
@@ -20881,6 +20886,7 @@ module.exports = _react2.default.createClass({
 			if (result.total) {
 				setTeams(result.data[0].ranks);
 				setSubmitted(result.data[0]._id);
+				setBlurb(result.data[0].blurb);
 			} else {
 				getTeams();
 			}
@@ -20905,6 +20911,11 @@ module.exports = _react2.default.createClass({
 	setTeams: function setTeams(teams) {
 		this.setState({
 			teams: teams
+		});
+	},
+	setBlurb: function setBlurb(blurb) {
+		this.setState({
+			blurb: blurb
 		});
 	},
 	setWeekConfig: function setWeekConfig(weekConfig) {
@@ -20972,8 +20983,13 @@ module.exports = _react2.default.createClass({
 					teams: this.state.teams,
 					setTeams: this.setTeams
 				}),
+				_react2.default.createElement(_Blurb2.default, {
+					blurb: this.state.blurb,
+					setBlurb: this.setBlurb
+				}),
 				_react2.default.createElement(_SubmitButton2.default, {
 					teams: this.state.teams,
+					blurb: this.state.blurb,
 					weekId: this.state.week._id,
 					userId: this.props.userId,
 					submitted: this.state.submitted,
@@ -20989,7 +21005,35 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./Info":174,"./LoginButton":175,"./NotificationBar":177,"./Results":178,"./SubmitButton":180,"./TeamList":181,"./UserList":183,"react":172}],174:[function(require,module,exports){
+},{"./Blurb":174,"./Info":175,"./LoginButton":176,"./NotificationBar":178,"./Results":179,"./SubmitButton":181,"./TeamList":182,"./UserList":184,"react":172}],174:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	getInitialState: function getInitialState() {
+		return { blurb: '' };
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		this.setState({
+			blurb: nextProps.blurb
+		});
+	},
+	handleChange: function handleChange(e) {
+		this.props.setBlurb(e.target.value);
+	},
+	render: function render() {
+		return _react2.default.createElement('textarea', { cols: '30', rows: '10', onChange: this.handleChange, value: this.state.blurb });
+	}
+});
+
+},{"react":172}],175:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21086,7 +21130,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./NewWeek":176,"./TeamSelect":182,"./WeekList":185,"react":172}],175:[function(require,module,exports){
+},{"./NewWeek":177,"./TeamSelect":183,"./WeekList":186,"react":172}],176:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21124,7 +21168,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],176:[function(require,module,exports){
+},{"react":172}],177:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21191,7 +21235,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],177:[function(require,module,exports){
+},{"react":172}],178:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21263,7 +21307,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"classnames":1,"react":172}],178:[function(require,module,exports){
+},{"classnames":1,"react":172}],179:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21368,6 +21412,7 @@ module.exports = _react2.default.createClass({
 						};
 					}
 				});
+				results[ranking.user.team]['blurb'] = ranking.blurb;
 			}
 		});
 		var resultArray = Object.keys(results).map(function (key) {
@@ -21405,7 +21450,8 @@ module.exports = _react2.default.createClass({
 				delta = this.getDelta(result);
 			}
 			var average = Math.round(result.points / results.count * 100) / 100;
-			return key + 1 + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|" + average + "|" + "\n";
+			var blurb = result.blurb ? result.blurb : '';
+			return key + 1 + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|" + average + "|" + blurb + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');
 		return tableHead + tableBody;
@@ -21448,7 +21494,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./ResultsButton":179,"react":172}],179:[function(require,module,exports){
+},{"./ResultsButton":180,"react":172}],180:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -21479,7 +21525,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],180:[function(require,module,exports){
+},{"react":172}],181:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21500,7 +21546,8 @@ module.exports = _react2.default.createClass({
 			submission: {
 				user: this.props.userId,
 				ranks: [],
-				week: ''
+				week: '',
+				blurb: ''
 			},
 			submitted: this.props.submitted
 		};
@@ -21510,7 +21557,8 @@ module.exports = _react2.default.createClass({
 			submission: {
 				user: this.props.userId,
 				ranks: this.getRankList(nextProps.teams),
-				week: nextProps.weekId
+				week: nextProps.weekId,
+				blurb: nextProps.blurb
 			},
 			submitted: nextProps.submitted
 		});
@@ -21553,7 +21601,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],181:[function(require,module,exports){
+},{"react":172}],182:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21644,7 +21692,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"classnames":1,"react":172}],182:[function(require,module,exports){
+},{"classnames":1,"react":172}],183:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -21716,7 +21764,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],183:[function(require,module,exports){
+},{"react":172}],184:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21790,7 +21838,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],184:[function(require,module,exports){
+},{"react":172}],185:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21906,6 +21954,7 @@ module.exports = _react2.default.createClass({
 					'ul',
 					null,
 					this.state.rankers.map(function (ranker, key) {
+						console.log(ranker);
 						return _react2.default.createElement(
 							'li',
 							{ key: key },
@@ -21920,7 +21969,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],185:[function(require,module,exports){
+},{"react":172}],186:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21971,14 +22020,14 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./WeekItem":184,"react":172}],186:[function(require,module,exports){
+},{"./WeekItem":185,"react":172}],187:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	"host": "http://localhost:3030"
 };
 
-},{}],187:[function(require,module,exports){
+},{}],188:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -22017,4 +22066,4 @@ function renderApp(login, username, userId, userTeam, admin) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam, admin: admin }), document.getElementById('App'));
 }
 
-},{"./components/App":173,"./config.js":186,"react":172,"react-dom":28}]},{},[187]);
+},{"./components/App":173,"./config.js":187,"react":172,"react-dom":28}]},{},[188]);

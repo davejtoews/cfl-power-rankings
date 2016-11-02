@@ -17,6 +17,7 @@ const rankingSchema = new Schema({
 
   },
   week: { type: ObjectId, ref: 'week', required: true },
+  blurb: {type: String},
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
 });

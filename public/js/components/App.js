@@ -6,6 +6,7 @@ import SubmitButton from './SubmitButton';
 import Results from './Results';
 import UserList from './UserList';
 import NotificationBar from './NotificationBar';
+import Blurb from './Blurb';
 
 module.exports = React.createClass({
 	childContextTypes: {
@@ -36,6 +37,7 @@ module.exports = React.createClass({
 		var setTeams = this.setTeams;
 		var getTeams = this.getTeams;
 		var setSubmitted = this.setSubmitted;
+		var setBlurb = this.setBlurb;
 
 		this.props.feathersApp.service('weeks').get(currentWeekId, {query: { $populate: 'year' }}).then(function(result){
 			setWeek(result);
@@ -44,6 +46,7 @@ module.exports = React.createClass({
 			if (result.total) {
 				setTeams(result.data[0].ranks);
 				setSubmitted(result.data[0]._id);
+				setBlurb(result.data[0].blurb);
 			} else {
 				getTeams();
 			}
@@ -68,6 +71,11 @@ module.exports = React.createClass({
 	setTeams: function(teams) {
 		this.setState({
 			teams: teams
+		});
+	},
+	setBlurb: function(blurb) {
+		this.setState({
+			blurb: blurb
 		});
 	},
 	setWeekConfig: function(weekConfig) {
@@ -130,8 +138,13 @@ module.exports = React.createClass({
 						teams={this.state.teams} 
 						setTeams={this.setTeams} 
 					/>
+					<Blurb 
+						blurb={this.state.blurb}
+						setBlurb={this.setBlurb}
+					/>
 					<SubmitButton 
 						teams={this.state.teams}
+						blurb={this.state.blurb}
 						weekId={this.state.week._id} 
 						userId={this.props.userId}
 						submitted={this.state.submitted}

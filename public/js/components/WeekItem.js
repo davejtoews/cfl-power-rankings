@@ -93,6 +93,7 @@ module.exports = React.createClass({
 					<summary>Week: {this.props.name} Rankings: {this.state.rankings}</summary>
 					<ul>
 						{this.state.rankers.map(function(ranker, key){
+							console.log(ranker);
 							return (
 								<li key={key} >{ranker.reddit.name}: {ranker.team.nickname}</li>
 							);

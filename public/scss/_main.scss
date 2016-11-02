@@ -1,17 +1,18 @@
 main {
 	text-align: center;
 	background: $light-gray;
-	padding-top: 4em;
-
-	.button {
-		margin-bottom: 2em;
-	}
+	padding: 4em 2em 2em;
 
 	@media all and (min-width: 1000px) {
 		display: inline-block;
 		width: 66.6666666%;
 		vertical-align: top;
 	}
+
+	textarea {
+		margin-bottom: 2em;
+	}
+
 }
 	.team-list {
 		padding: 1em;
