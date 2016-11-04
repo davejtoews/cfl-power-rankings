@@ -1,5 +1,6 @@
 import React from 'react';
 import WeekItem from './WeekItem';
+import RankingModal from './RankingModal';
 
 module.exports = React.createClass({
 	contextTypes: {
@@ -8,7 +9,9 @@ module.exports = React.createClass({
 	},
 	getInitialState: function() {
 		return({
-			weeks: []
+			weeks: [],
+			modalRanking: {},
+			modalOpen: false
 		});
 	},
 	componentWillReceiveProps: function(nextProps) {
@@ -26,15 +29,24 @@ module.exports = React.createClass({
 			weeks: weeks
 		});
 	},
+	setModalRanking(ranking) {
+		this.setState({
+			modalRanking: ranking,
+			modalOpen: true
+		});
+	},
 	render: function () {
 		return(
-			<ul>
-		        {this.state.weeks.map(function(week, i) {
-					return (
-						<WeekItem key={week._id} name={week.name} id={week._id} />
-					)
-				}, this)}
-			</ul>
+			<div className="week-list-wrapper">
+				<ul>
+			        {this.state.weeks.map(function(week, i) {
+						return (
+							<WeekItem key={week._id} name={week.name} id={week._id} setModalRanking={this.setModalRanking} />
+						)
+					}, this)}
+				</ul>
+				<RankingModal ranking={this.state.modalRanking} open={this.state.modalOpen} />	
+			</div>
 		);
 	}
 });

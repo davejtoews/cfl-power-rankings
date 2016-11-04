@@ -54,14 +54,15 @@ header {
 					color: #fff;
 				}
 			}
-
-			& > ul {
-				margin-top: 1em;
-				ul {
-					margin-left: 2em;
+		}
+			.week-list-wrapper {
+				& > ul {
+					margin-top: 1em;
+					ul {
+						margin-left: 2em;
+					}
 				}
 			}
-		}
 
 			.new-week-form {
 				padding: 0.5em;

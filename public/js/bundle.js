@@ -21005,7 +21005,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./Blurb":174,"./Info":175,"./LoginButton":176,"./NotificationBar":178,"./Results":179,"./SubmitButton":181,"./TeamList":182,"./UserList":184,"react":172}],174:[function(require,module,exports){
+},{"./Blurb":174,"./Info":175,"./LoginButton":176,"./NotificationBar":178,"./Results":180,"./SubmitButton":182,"./TeamList":183,"./UserList":185,"react":172}],174:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21130,7 +21130,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./NewWeek":177,"./TeamSelect":183,"./WeekList":186,"react":172}],176:[function(require,module,exports){
+},{"./NewWeek":177,"./TeamSelect":184,"./WeekList":187,"react":172}],176:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21308,6 +21308,100 @@ module.exports = _react2.default.createClass({
 });
 
 },{"classnames":1,"react":172}],179:[function(require,module,exports){
+'use strict';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _react2.default.createClass({
+	displayName: 'exports',
+
+	getInitialState: function getInitialState() {
+		return {
+			ranking: {},
+			open: false
+		};
+	},
+	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		this.setState({
+			ranking: nextProps.ranking,
+			open: nextProps.open
+		});
+	},
+	handleClick: function handleClick(e) {
+		e.preventDefault();
+		this.setState({
+			open: false
+		});
+	},
+	render: function render() {
+		var statusClass = this.state.open ? 'open' : '';
+		var notificationClasses = (0, _classnames2.default)('modal ' + statusClass);
+		var listItems = '';
+		var blurb;
+		var week;
+		var user;
+		var team;
+		if (Object.keys(this.state.ranking).length) {
+			listItems = this.state.ranking.ranks.map(function (team) {
+				return _react2.default.createElement(
+					'li',
+					{ key: team._id },
+					team.location
+				);
+			});
+			blurb = this.state.ranking.blurb ? this.state.ranking.blurb : '';
+			week = this.state.ranking.week ? this.state.ranking.week : '';
+			user = this.state.ranking.user ? this.state.ranking.user : '';
+			team = this.state.ranking.team ? this.state.ranking.team : '';
+		}
+		return _react2.default.createElement(
+			'div',
+			{ className: notificationClasses },
+			_react2.default.createElement(
+				'div',
+				{ className: 'modal-content' },
+				_react2.default.createElement(
+					'a',
+					{ href: '#', onClick: this.handleClick },
+					'X'
+				),
+				_react2.default.createElement(
+					'h3',
+					null,
+					'Week ',
+					week
+				),
+				_react2.default.createElement(
+					'h4',
+					null,
+					user,
+					': ',
+					team
+				),
+				_react2.default.createElement(
+					'ol',
+					null,
+					listItems
+				),
+				_react2.default.createElement(
+					'p',
+					null,
+					blurb
+				)
+			)
+		);
+	}
+});
+
+},{"classnames":1,"react":172}],180:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21494,7 +21588,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"./ResultsButton":180,"react":172}],180:[function(require,module,exports){
+},{"./ResultsButton":181,"react":172}],181:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -21525,7 +21619,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],181:[function(require,module,exports){
+},{"react":172}],182:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21601,7 +21695,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],182:[function(require,module,exports){
+},{"react":172}],183:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21692,7 +21786,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"classnames":1,"react":172}],183:[function(require,module,exports){
+},{"classnames":1,"react":172}],184:[function(require,module,exports){
 "use strict";
 
 var _react = require("react");
@@ -21764,7 +21858,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],184:[function(require,module,exports){
+},{"react":172}],185:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21838,7 +21932,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],185:[function(require,module,exports){
+},{"react":172}],186:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21936,7 +22030,23 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	handleClick: function handleClick(e) {
-		console.log(e.target);
+		console.log(e.target.dataset);
+		var week = this.props;
+		var ranker = e.target.dataset.rankerId;
+		var user = e.target.dataset.rankerName;
+		var team = e.target.dataset.team;
+		var setModalRanking = this.props.setModalRanking;
+		this.context.feathersApp.service('rankings').find({ query: { week: week.id, user: ranker, $populate: 'ranks' } }).then(function (result) {
+			setModalRanking({
+				ranks: result.data[0].ranks,
+				blurb: result.data[0].blurb ? result.data[0].blurb : '',
+				user: user,
+				team: team,
+				week: week.name
+			});
+		}).catch(function (error) {
+			console.error('Error getting rankings!', error);
+		});
 	},
 
 	render: function render() {
@@ -21960,10 +22070,19 @@ module.exports = _react2.default.createClass({
 					this.state.rankers.map(function (ranker, key) {
 						return _react2.default.createElement(
 							'li',
-							{ key: key, 'data-week': this.props.id, 'data-ranker': ranker._id, onClick: this.handleClick },
-							ranker.reddit.name,
-							': ',
-							ranker.team.nickname
+							{ key: key },
+							_react2.default.createElement(
+								'a',
+								{
+									href: '#',
+									'data-ranker-id': ranker._id,
+									'data-ranker-name': ranker.reddit.name,
+									'data-team': ranker.team.nickname,
+									onClick: this.handleClick },
+								ranker.reddit.name,
+								': ',
+								ranker.team.nickname
+							)
 						);
 					}, this)
 				)
@@ -21972,7 +22091,7 @@ module.exports = _react2.default.createClass({
 	}
 });
 
-},{"react":172}],186:[function(require,module,exports){
+},{"react":172}],187:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21982,6 +22101,10 @@ var _react2 = _interopRequireDefault(_react);
 var _WeekItem = require('./WeekItem');
 
 var _WeekItem2 = _interopRequireDefault(_WeekItem);
+
+var _RankingModal = require('./RankingModal');
+
+var _RankingModal2 = _interopRequireDefault(_RankingModal);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21994,7 +22117,9 @@ module.exports = _react2.default.createClass({
 	},
 	getInitialState: function getInitialState() {
 		return {
-			weeks: []
+			weeks: [],
+			modalRanking: {},
+			modalOpen: false
 		};
 	},
 	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
@@ -22012,25 +22137,37 @@ module.exports = _react2.default.createClass({
 			weeks: weeks
 		});
 	},
+	setModalRanking: function setModalRanking(ranking) {
+		this.setState({
+			modalRanking: ranking,
+			modalOpen: true
+		});
+	},
+
 	render: function render() {
 		return _react2.default.createElement(
-			'ul',
-			null,
-			this.state.weeks.map(function (week, i) {
-				return _react2.default.createElement(_WeekItem2.default, { key: week._id, name: week.name, id: week._id });
-			}, this)
+			'div',
+			{ className: 'week-list-wrapper' },
+			_react2.default.createElement(
+				'ul',
+				null,
+				this.state.weeks.map(function (week, i) {
+					return _react2.default.createElement(_WeekItem2.default, { key: week._id, name: week.name, id: week._id, setModalRanking: this.setModalRanking });
+				}, this)
+			),
+			_react2.default.createElement(_RankingModal2.default, { ranking: this.state.modalRanking, open: this.state.modalOpen })
 		);
 	}
 });
 
-},{"./WeekItem":185,"react":172}],187:[function(require,module,exports){
+},{"./RankingModal":179,"./WeekItem":186,"react":172}],188:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	"host": "http://localhost:3030"
 };
 
-},{}],188:[function(require,module,exports){
+},{}],189:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -22069,4 +22206,4 @@ function renderApp(login, username, userId, userTeam, admin) {
 		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam, admin: admin }), document.getElementById('App'));
 }
 
-},{"./components/App":173,"./config.js":187,"react":172,"react-dom":28}]},{},[188]);
+},{"./components/App":173,"./config.js":188,"react":172,"react-dom":28}]},{},[189]);
