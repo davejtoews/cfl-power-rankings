@@ -9,6 +9,7 @@ module.exports = React.createClass({
 		};
 	},
 	componentWillReceiveProps: function (nextProps) {
+		console.log(nextProps);
 		this.setState({
 			ranking: nextProps.ranking,
 			open: nextProps.open
@@ -16,9 +17,7 @@ module.exports = React.createClass({
 	},
 	handleClick: function(e) {
 		e.preventDefault();
-		this.setState({
-			open: false
-		})
+		this.props.closeModal();
 	},
 	render: function () {
 		var statusClass = (this.state.open) ? 'open' : '';

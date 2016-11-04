@@ -21330,6 +21330,7 @@ module.exports = _react2.default.createClass({
 		};
 	},
 	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		console.log(nextProps);
 		this.setState({
 			ranking: nextProps.ranking,
 			open: nextProps.open
@@ -21337,9 +21338,7 @@ module.exports = _react2.default.createClass({
 	},
 	handleClick: function handleClick(e) {
 		e.preventDefault();
-		this.setState({
-			open: false
-		});
+		this.props.closeModal();
 	},
 	render: function render() {
 		var statusClass = this.state.open ? 'open' : '';
@@ -22030,7 +22029,6 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	handleClick: function handleClick(e) {
-		console.log(e.target.dataset);
 		var week = this.props;
 		var ranker = e.target.dataset.rankerId;
 		var user = e.target.dataset.rankerName;
@@ -22143,6 +22141,11 @@ module.exports = _react2.default.createClass({
 			modalOpen: true
 		});
 	},
+	closeModal: function closeModal() {
+		this.setState({
+			modalOpen: false
+		});
+	},
 
 	render: function render() {
 		return _react2.default.createElement(
@@ -22155,7 +22158,7 @@ module.exports = _react2.default.createClass({
 					return _react2.default.createElement(_WeekItem2.default, { key: week._id, name: week.name, id: week._id, setModalRanking: this.setModalRanking });
 				}, this)
 			),
-			_react2.default.createElement(_RankingModal2.default, { ranking: this.state.modalRanking, open: this.state.modalOpen })
+			_react2.default.createElement(_RankingModal2.default, { ranking: this.state.modalRanking, open: this.state.modalOpen, closeModal: this.closeModal })
 		);
 	}
 });

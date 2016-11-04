@@ -87,7 +87,6 @@ module.exports = React.createClass({
 		});
 	},
 	handleClick(e) {
-		console.log(e.target.dataset);
 		var week = this.props;
 		var ranker = e.target.dataset.rankerId;
 		var user = e.target.dataset.rankerName;

@@ -35,6 +35,11 @@ module.exports = React.createClass({
 			modalOpen: true
 		});
 	},
+	closeModal() {
+		this.setState({
+			modalOpen: false
+		});
+	},
 	render: function () {
 		return(
 			<div className="week-list-wrapper">
@@ -45,7 +50,7 @@ module.exports = React.createClass({
 						)
 					}, this)}
 				</ul>
-				<RankingModal ranking={this.state.modalRanking} open={this.state.modalOpen} />	
+				<RankingModal ranking={this.state.modalRanking} open={this.state.modalOpen} closeModal={this.closeModal} />	
 			</div>
 		);
 	}
