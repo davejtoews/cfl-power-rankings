@@ -306,51 +306,49 @@ main {
   main textarea {
     margin-bottom: 2em; }
 
+.team-list li, .sort-helper {
+  list-style: none;
+  text-align: center;
+  font-size: 0.9em;
+  max-width: 20em;
+  margin: 1em;
+  padding: 0.25em 0;
+  border-radius: 1em;
+  border: 0.25em solid;
+  color: #fff; }
+  .team-list li.bc, .bc.sort-helper {
+    background: #ed8B00;
+    border-color: #fff; }
+  .team-list li.calgary, .calgary.sort-helper {
+    background: #c8102e;
+    border-color: #fff; }
+  .team-list li.edmonton, .edmonton.sort-helper {
+    background: #2c5234;
+    border-color: #ffb81c; }
+  .team-list li.hamilton, .hamilton.sort-helper {
+    background: #010101;
+    border-color: #ffb81c; }
+  .team-list li.montreal, .montreal.sort-helper {
+    background: #003A70;
+    border-color: #862633; }
+  .team-list li.ottawa, .ottawa.sort-helper {
+    background: #a6192e;
+    border-color: #010101; }
+  .team-list li.saskatchewan, .saskatchewan.sort-helper {
+    background: #006341;
+    border-color: #fff; }
+  .team-list li.toronto, .toronto.sort-helper {
+    background: #0c2340;
+    border-color: #5e90b0; }
+  .team-list li.winnipeg, .winnipeg.sort-helper {
+    background: #003087;
+    border-color: #B9975b; }
+
 .team-list {
   padding: 1em;
-  font-size: 0.9em;
-  height: 25em; }
-  .team-list li {
-    max-width: 20em;
-    margin: 0 auto;
-    padding: 0.25em 0;
-    border-radius: 1em;
-    border: 0.25em solid;
-    color: #fff; }
-    .team-list li.bc {
-      background: #ed8B00;
-      border-color: #fff; }
-    .team-list li.calgary {
-      background: #c8102e;
-      border-color: #fff; }
-    .team-list li.edmonton {
-      background: #2c5234;
-      border-color: #ffb81c; }
-    .team-list li.hamilton {
-      background: #010101;
-      border-color: #ffb81c; }
-    .team-list li.montreal {
-      background: #003A70;
-      border-color: #862633; }
-    .team-list li.ottawa {
-      background: #a6192e;
-      border-color: #010101; }
-    .team-list li.saskatchewan {
-      background: #006341;
-      border-color: #fff; }
-    .team-list li.toronto {
-      background: #0c2340;
-      border-color: #5e90b0; }
-    .team-list li.winnipeg {
-      background: #003087;
-      border-color: #B9975b; }
-  .team-list .placeholder {
-    display: block; }
-    .team-list .placeholder:before {
-      content: 'drop here'; }
-
-.placeholder {
-  display: none; }
+  height: 35em;
+  margin: 0 auto;
+  width: 25em; }
 
 aside {
   padding: 6em 2em 2em;

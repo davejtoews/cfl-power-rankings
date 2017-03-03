@@ -14,74 +14,75 @@ main {
 	}
 
 }
+
+%teams {
+	list-style: none;
+	text-align: center;
+	font-size: 0.9em;
+	max-width: 20em;
+	margin: 1em;
+	padding: 0.25em 0;
+	border-radius: 1em;
+	border: 0.25em solid;
+	color: #fff;
+
+	&.bc {
+		background: $bc-color-1;
+		border-color: $bc-color-2;
+	}
+	
+	&.calgary {
+		background: $calgary-color-1;
+		border-color: $calgary-color-2;
+	}
+	
+	&.edmonton {
+		background: $edmonton-color-1;
+		border-color: $edmonton-color-2;
+	}
+	
+	&.hamilton {
+		background: $hamilton-color-1;
+		border-color: $hamilton-color-2;
+	}
+	
+	&.montreal {
+		background: $montreal-color-1;
+		border-color: $montreal-color-2;
+	}
+	
+	&.ottawa {
+		background: $ottawa-color-1;
+		border-color: $ottawa-color-2;
+	}
+	
+	&.saskatchewan {
+		background: $saskatchewan-color-1;
+		border-color: $saskatchewan-color-2;
+	}
+	
+	&.toronto {
+		background: $toronto-color-1;
+		border-color: $toronto-color-2;
+	}
+	
+	&.winnipeg {
+		background: $winnipeg-color-1;
+		border-color: $winnipeg-color-2;
+	}
+}
+
 	.team-list {
 		padding: 1em;
-		font-size: 0.9em;
-		height: 25em;
+		height: 35em;
+		margin: 0 auto;
+		width: 25em;
 
 		li {
-			max-width: 20em;
-			margin: 0 auto;
-			padding: 0.25em 0;
-			border-radius: 1em;
-			border: 0.25em solid;
-			color: #fff;
-
-			&.bc {
-				background: $bc-color-1;
-				border-color: $bc-color-2;
-			}
-			
-			&.calgary {
-				background: $calgary-color-1;
-				border-color: $calgary-color-2;
-			}
-			
-			&.edmonton {
-				background: $edmonton-color-1;
-				border-color: $edmonton-color-2;
-			}
-			
-			&.hamilton {
-				background: $hamilton-color-1;
-				border-color: $hamilton-color-2;
-			}
-			
-			&.montreal {
-				background: $montreal-color-1;
-				border-color: $montreal-color-2;
-			}
-			
-			&.ottawa {
-				background: $ottawa-color-1;
-				border-color: $ottawa-color-2;
-			}
-			
-			&.saskatchewan {
-				background: $saskatchewan-color-1;
-				border-color: $saskatchewan-color-2;
-			}
-			
-			&.toronto {
-				background: $toronto-color-1;
-				border-color: $toronto-color-2;
-			}
-			
-			&.winnipeg {
-				background: $winnipeg-color-1;
-				border-color: $winnipeg-color-2;
-			}
-			
-		}
-
-		.placeholder {
-			display: block;
-			&:before {
-				content: 'drop here';
-			}
+			@extend %teams;
 		}
 	}
 
-	.placeholder {
-		display: none;
-	}
+.sort-helper {
+	@extend %teams;
+}
