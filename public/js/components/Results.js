@@ -8,7 +8,7 @@ module.exports = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			results: [],
+			results: {results: [], count: 0},
 			markDown: '',
 			records: [],
 			lastWeekName: '',
@@ -68,8 +68,8 @@ module.exports = React.createClass({
 		var count = rankings.length;
 		var results = this.tabulateRankings(rankings, count);
 		this.setState({
-			results: results.results,
-			markDown: this.createMarkDown(results.results)
+			results: results,
+			markDown: this.createMarkDown(results)
 		});
 	},
 	tabulateRankings: function(rankings, count) {
@@ -122,7 +122,7 @@ module.exports = React.createClass({
 	createMarkDown: function(results) {
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 			tableHead += "-:|-|-|-|-|-|-\n";
-		var tableRows = results.map(function(result, key) {
+		var tableRows = results.results.map(function(result, key) {
 			var delta = 0;
 			if(this.state.lastWeekResults.count) {
 				delta = this.getDelta(result, key);
@@ -149,7 +149,7 @@ module.exports = React.createClass({
 					<ResultsButton getRankings={this.getRankings} />
 				</form>
 				<ul>
-					{this.state.results.map(function(result, key){
+					{this.state.results.results.map(function(result, key){
 						return (
 							<li key={key} >{result.location}:{result.points}</li>
 						);
