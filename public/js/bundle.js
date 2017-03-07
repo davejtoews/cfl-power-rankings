@@ -26602,7 +26602,7 @@ module.exports = _react2.default.createClass({
 		var results = this.tabulateRankings(rankings, count);
 		this.setState({
 			results: results.results,
-			markDown: this.createMarkDown(results)
+			markDown: this.createMarkDown(results.results)
 		});
 	},
 	tabulateRankings: function tabulateRankings(rankings, count) {
@@ -26654,9 +26654,10 @@ module.exports = _react2.default.createClass({
 		return thisWeekResult.points - lastWeekResult.points;
 	},
 	createMarkDown: function createMarkDown(results) {
+		console.log({ results: results });
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 		tableHead += "-:|-|-|-|-|-|-\n";
-		var tableRows = results.results.map(function (result, key) {
+		var tableRows = results.map(function (result, key) {
 			var delta = 0;
 			if (this.state.lastWeekResults.length) {
 				delta = this.getDelta(result);
