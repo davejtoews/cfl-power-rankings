@@ -108,25 +108,24 @@ module.exports = React.createClass({
 
 		return {results: sortedResults, count: count};
 	},
-	getDelta: function(thisWeekResult) {
-		var lastWeekResult;
+	getDelta: function(thisWeekResult, thisWeekIndex) {
+		var lastWeekIndex;
 
-		this.state.lastWeekResults.forEach(function(result) {
+		this.state.lastWeekResults.results.forEach(function(result, index) {
 			if (result.cflId == thisWeekResult.cflId) {
-				lastWeekResult = result;
+				lastWeekIndex = index;
 			}
 		});
 
-		return thisWeekResult.points - lastWeekResult.points;
+		return lastWeekIndex - thisWeekIndex;
 	},
 	createMarkDown: function(results) {
-		console.log({results: results});
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 			tableHead += "-:|-|-|-|-|-|-\n";
 		var tableRows = results.map(function(result, key) {
 			var delta = 0;
-			if(this.state.lastWeekResults.length) {
-				delta = this.getDelta(result);
+			if(this.state.lastWeekResults.count) {
+				delta = this.getDelta(result, key);
 			}
 			var average = Math.round(result.points / results.count * 100) / 100;
 			var blurb = (result.blurb) ? result.blurb : '';
