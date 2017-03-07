@@ -26145,7 +26145,7 @@ module.exports = _react2.default.createClass({
 		});
 	},
 	handleChange: function handleChange(e) {
-		this.props.setBlurb(e.target.value);
+		this.props.setBlurb(e.target.value.replace(/\n/g, ""));
 	},
 	render: function render() {
 		return _react2.default.createElement('textarea', { cols: '30', rows: '10', onChange: this.handleChange, value: this.state.blurb });
@@ -26662,7 +26662,7 @@ module.exports = _react2.default.createClass({
 				delta = this.getDelta(result, key);
 			}
 			var average = Math.round(result.points / results.count * 100) / 100;
-			var blurb = result.blurb ? result.blurb : '';
+			var blurb = result.blurb ? result.blurb.replace(/\n/g, "") : '';
 			return key + 1 + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|" + average + "|" + blurb + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');

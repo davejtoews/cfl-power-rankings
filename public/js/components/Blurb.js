@@ -10,7 +10,7 @@ module.exports = React.createClass({
 		});	
 	},
 	handleChange: function(e) {
-		this.props.setBlurb(e.target.value);
+		this.props.setBlurb(e.target.value.replace(/\n/g, ""));
 	},
 	render: function () {
 		return(

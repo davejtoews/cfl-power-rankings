@@ -128,7 +128,7 @@ module.exports = React.createClass({
 				delta = this.getDelta(result, key);
 			}
 			var average = Math.round(result.points / results.count * 100) / 100;
-			var blurb = (result.blurb) ? result.blurb : '';
+			var blurb = (result.blurb) ? result.blurb.replace(/\n/g, "") : '';
 			return (key + 1) + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ average +"|" + blurb + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');
