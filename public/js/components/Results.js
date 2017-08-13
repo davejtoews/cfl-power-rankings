@@ -96,7 +96,12 @@ module.exports = React.createClass({
 			}
 		});
 		var resultArray = Object.keys(results).map(key => results[key]);
-		var sortedResults = resultArray.sort(function(a, b){
+		var sortedResults = this.sortResults(resultArray);
+		var rankedResults = this.rankResults(sortedResults);
+		return {results: rankedResults, count: count};
+	},
+	sortResults: function(results) {
+		return results.sort(function(a, b){
 			if (a.points < b.points) {
 				return -1;
 			}
@@ -105,19 +110,32 @@ module.exports = React.createClass({
 			}
 			return 0;
 		});
-
-		return {results: sortedResults, count: count};
 	},
-	getDelta: function(thisWeekResult, thisWeekIndex) {
-		var lastWeekIndex;
+	rankResults: function(results) {
+		for(var i = 0; i < results.length; i++ ) {
+			if (typeof results[i].tie === 'undefined') {
+				results[i].rank = i + 1;
+			} else {
+				results[i].rank = results[i].tie 
+			}
+			if (i < results.length - 1 && results[i].points === results[i + 1].points) {
+				results[i].tie = results[i].rank;
+				results[i + 1].tie = results[i].rank;
+			}
+		}
+		return results;
+	},
+	getDelta: function(thisWeekResult) {
+		var thisWeekRank = thisWeekResult.rank;
+		var lastWeekRank;
 
 		this.state.lastWeekResults.results.forEach(function(result, index) {
 			if (result.cflId == thisWeekResult.cflId) {
-				lastWeekIndex = index;
+				lastWeekRank = result.rank;
 			}
 		});
 
-		return lastWeekIndex - thisWeekIndex;
+		return lastWeekRank - thisWeekRank;
 	},
 	createMarkDown: function(results) {
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
@@ -125,11 +143,12 @@ module.exports = React.createClass({
 		var tableRows = results.results.map(function(result, key) {
 			var delta = 0;
 			if(this.state.lastWeekResults.count) {
-				delta = this.getDelta(result, key);
+				delta = this.getDelta(result);
 			}
 			var average = Math.round(result.points / results.count * 100) / 100;
 			var blurb = (result.blurb) ? result.blurb.replace(/\n/g, "") : '';
-			return (key + 1) + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ average +"|" + blurb + "\n";
+			var tie = (typeof result.tie === 'undefined') ? '' : 'T';
+			return result.rank + tie + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ average +"|" + blurb + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');
 		return tableHead + tableBody;
