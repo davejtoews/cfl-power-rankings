@@ -26683,8 +26683,16 @@ module.exports = _react2.default.createClass({
 	},
 	getTeams: function getTeams() {
 		var setTeams = this.setTeams;
-		this.props.feathersApp.service('teams').find().then(function (result) {
-			setTeams(result.data);
+		this.props.feathersApp.service('rankings').find({ query: { user: this.props.userId, $populate: 'ranks', $sort: { week: -1 }, $limit: 1 } }).then(function (result) {
+			if (result.total) {
+				// Get last ranking
+				setTeams(result.data[0].ranks);
+			} else {
+				// Get default team order
+				this.props.feathersApp.service('teams').find().then(function (result) {
+					setTeams(result.data);
+				});
+			}
 		});
 	},
 	setWeek: function setWeek(week) {
