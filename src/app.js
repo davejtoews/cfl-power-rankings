@@ -57,7 +57,7 @@ app.use(compress())
             });
       });
     });
-  }))
+  }, {timeout: 10000}))
   .configure(services)
   .configure(middleware);
 
