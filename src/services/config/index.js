@@ -19,11 +19,7 @@ module.exports = function() {
   app.use('/configs', service(options));
 
   // Get our initialize service to that we can bind hooks
-  const configService = app.service('/configs');
+  const configService = app.service('configs');
 
-  // Set up our before hooks
-  configService.before(hooks.before);
-
-  // Set up our after hooks
-  configService.after(hooks.after);
+  configService.hooks(hooks);
 };

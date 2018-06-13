@@ -21,9 +21,5 @@ module.exports = function() {
   // Get our initialize service to that we can bind hooks
   const teamService = app.service('/teams');
 
-  // Set up our before hooks
-  teamService.before(hooks.before);
-
-  // Set up our after hooks
-  teamService.after(hooks.after);
+  teamService.hooks(hooks);
 };

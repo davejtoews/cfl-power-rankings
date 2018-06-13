@@ -19,11 +19,7 @@ module.exports = function() {
   app.use('/weeks', service(options));
 
   // Get our initialize service to that we can bind hooks
-  const weekService = app.service('/weeks');
+  const weekService = app.service('weeks');
 
-  // Set up our before hooks
-  weekService.before(hooks.before);
-
-  // Set up our after hooks
-  weekService.after(hooks.after);
+  weekService.hooks(hooks);
 };

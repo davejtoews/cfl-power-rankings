@@ -14,7 +14,7 @@ exports.isAdmin = function(options) {
   };
 };
 
-var _feathersErrors = require('feathers-errors');
+var _feathersErrors = require('@feathersjs/errors');
 
 var _feathersErrors2 = _interopRequireDefault(_feathersErrors);
 

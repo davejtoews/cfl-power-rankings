@@ -1,23 +1,29 @@
 'use strict';
 
 const path = require('path');
-const serveStatic = require('feathers').static;
+const serveStatic = require('@feathersjs/feathers').static;
+const express = require('@feathersjs/express');
 const favicon = require('serve-favicon');
 const compress = require('compression');
 const cors = require('cors');
-const feathers = require('feathers');
-const configuration = require('feathers-configuration');
-const hooks = require('feathers-hooks');
-const rest = require('feathers-rest');
+const feathers = require('@feathersjs/feathers');
+const configuration = require('@feathersjs/configuration');
+const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
-const socketio = require('feathers-socketio');
+const socketio = require('@feathersjs/socketio');
 const middleware = require('./middleware');
 const services = require('./services');
 const fetch = require('node-fetch');
+const channels = require('./channels');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
-const app = feathers();
+const app = express(feathers());
+
 
 app.configure(configuration(path.join(__dirname, '..')));
+
+app.use(session({secret: app.get('auth').secret}));
 
 const whitelist = app.get('corsWhitelist');
 const corsOptions = {
@@ -31,10 +37,10 @@ app.use(compress())
   .options('*', cors(corsOptions))
   .use(cors(corsOptions))
   .use(favicon( path.join(app.get('public'), 'favicon.ico') ))
-  .use('/', serveStatic( app.get('public') ))
+  .use('/', express.static( app.get('public') ))
+  .use(cookieParser())
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
-  .configure(hooks())
   .configure(rest())
   .configure(socketio(function(io) {
     io.on('connection', function(socket) {
@@ -59,6 +65,7 @@ app.use(compress())
     });
   }, {timeout: 10000}))
   .configure(services)
+  .configure(channels)
   .configure(middleware);
 
 module.exports = app;

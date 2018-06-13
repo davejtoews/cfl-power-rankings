@@ -1,9 +1,12 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication').hooks;
-const feathers = require('feathers');
+const auth = require('@feathersjs/authentication');
+const feathers = require('@feathersjs/feathers');
+const {
+  queryWithCurrentUser,
+  restrictToOwner
+} = require('feathers-authentication-hooks');
 
 const app = feathers();
 
@@ -19,9 +22,8 @@ var checkIfSubmitted = function(options) {
 
 exports.before = {
   all: [
-    auth.verifyToken(),
-    auth.populateUser(),
-    auth.restrictToAuthenticated()
+    auth.hooks.authenticate('jwt'),
+    queryWithCurrentUser()
   ],
   find: [],
   get: [],
