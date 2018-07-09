@@ -1,11 +1,13 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
-module.exports = React.createClass({
-	contextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	handleClick: function(e) {
+module.exports = class extends React.Component {
+    static contextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    handleClick = (e) => {
 		if (this.context.login) {
 			e.preventDefault();
 			this.context.feathersApp.logout().then(function(result){
@@ -15,12 +17,13 @@ module.exports = React.createClass({
 			  console.error('Error logging out!', error);
 			});
 		}
-	},
-	render: function () {
+	};
+
+    render() {
 		var url = this.context.login ? '/' : '/auth/reddit';
 		var text = this.context.login ? 'Logout' : 'Login';
 		return(
 			<a href={ url } className="button login" onClick={ this.handleClick }>{ text }</a>
 		);
 	}
-});
+};

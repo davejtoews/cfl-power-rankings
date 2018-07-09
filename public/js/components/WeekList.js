@@ -1,20 +1,21 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import WeekItem from './WeekItem';
 import RankingModal from './RankingModal';
 
-module.exports = React.createClass({
-	contextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	getInitialState: function() {
-		return({
-			weeks: [],
-			modalRanking: {},
-			modalOpen: false
-		});
-	},
-	componentWillReceiveProps: function(nextProps) {
+module.exports = class extends React.Component {
+    static contextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    state = {
+        weeks: [],
+        modalRanking: {},
+        modalOpen: false
+    };
+
+    componentWillReceiveProps(nextProps) {
 		var setWeeks = this.setWeeks;
 		if (nextProps.yearId) {
 			this.context.feathersApp.service('weeks').find({query: { year: nextProps.yearId}}).then(function(result){
@@ -23,24 +24,28 @@ module.exports = React.createClass({
 				console.error('Error getting weeks!', error);
 			});			
 		}
-	},
-	setWeeks: function(weeks) {
+	}
+
+    setWeeks = (weeks) => {
 		this.setState({
 			weeks: weeks
 		});
-	},
-	setModalRanking(ranking) {
+	};
+
+    setModalRanking = (ranking) => {
 		this.setState({
 			modalRanking: ranking,
 			modalOpen: true
 		});
-	},
-	closeModal() {
+	};
+
+    closeModal = () => {
 		this.setState({
 			modalOpen: false
 		});
-	},
-	render: function () {
+	};
+
+    render() {
 		return(
 			<div className="week-list-wrapper">
 				<ul>
@@ -54,4 +59,4 @@ module.exports = React.createClass({
 			</div>
 		);
 	}
-});
+};

@@ -1,19 +1,22 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
-module.exports = React.createClass({
-	contextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	handleClick: function(e) {
+module.exports = class extends React.Component {
+    static contextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    handleClick = (e) => {
 		if (this.context.login) {
 			e.preventDefault();
 			this.props.getRankings();
 		}
-	},
-	render: function () {
+	};
+
+    render() {
 		return(
 			<a href="#" className="button" onClick={ this.handleClick }>Results</a>
 		);
 	}
-});
+};

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import LoginButton from './LoginButton';
 import Info from './Info';
@@ -8,31 +9,32 @@ import UserList from './UserList';
 import NotificationBar from './NotificationBar';
 import Blurb from './Blurb';
 
-module.exports = React.createClass({
-	childContextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	getChildContext: function() {
+module.exports = class extends React.Component {
+    static childContextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    state = {
+        week: '',
+        teams: [],
+        weekConfig: '',
+        submitted: false,
+        notification: {
+            type: false,
+            message: '',
+            time: 0
+        }
+    };
+
+    getChildContext() {
 		return { 
 			feathersApp: this.props.feathersApp,
 			login: this.props.login
 		}
-	},
-	getInitialState: function() {
-		return {
-			week: '',
-			teams: [],
-			weekConfig: '',
-			submitted: false,
-			notification: {
-				type: false,
-				message: '',
-				time: 0
-			}
-		}
-	},
-	getInfo: function(currentWeekId) {
+	}
+
+    getInfo = (currentWeekId) => {
 		var setWeek = this.setWeek;
 		var setTeams = this.setTeams;
 		var getTeams = this.getTeams;
@@ -51,8 +53,9 @@ module.exports = React.createClass({
 				getTeams();
 			}
 		});
-	},
-	getTeams: function() {
+	};
+
+    getTeams = () => {
 		var setTeams = this.setTeams;
 		var feathersApp = this.props.feathersApp;
 		this.props.feathersApp.service('rankings').find({query: {user: this.props.userId, $populate: 'ranks', $sort: {week: -1}, $limit: 1}}).then(function(result) {
@@ -64,8 +67,9 @@ module.exports = React.createClass({
 				});
 			}
 		});
-	},
-	setWeek: function(week) {
+	};
+
+    setWeek = (week) => {
 		if (typeof week.year == "string" && week.year == this.state.week.year._id) {
 			week.year = this.state.week.year
 		}
@@ -74,28 +78,33 @@ module.exports = React.createClass({
 			week: week,
 			submitted: false
 		});	
-	},
-	setTeams: function(teams) {
+	};
+
+    setTeams = (teams) => {
 		this.setState({
 			teams: teams
 		});
-	},
-	setBlurb: function(blurb) {
+	};
+
+    setBlurb = (blurb) => {
 		this.setState({
 			blurb: blurb
 		});
-	},
-	setWeekConfig: function(weekConfig) {
+	};
+
+    setWeekConfig = (weekConfig) => {
 		this.setState({
 			weekConfig: weekConfig
 		});
-	},
-	setSubmitted: function(submitted) {
+	};
+
+    setSubmitted = (submitted) => {
 		this.setState({
 			submitted: submitted
 		});
-	},
-	componentDidMount: function() {
+	};
+
+    componentDidMount() {
 		if(!this.props.login) {
 			this.setNotifications('error', 'Please login to access this app.')
 		} else if (!this.props.admin) {
@@ -108,8 +117,9 @@ module.exports = React.createClass({
 				getInfo(result.data[0].value);
 			});
 		}
-	},
-	setNotifications: function(type, message) {
+	}
+
+    setNotifications = (type, message) => {
 		this.setState({
 			notification: {
 				type: type,
@@ -117,8 +127,9 @@ module.exports = React.createClass({
 				time: Date.now()
 			}
 		})
-	},
-	render: function () {
+	};
+
+    render() {
 		return(
 			<div className="app-wrapper">
 				<header>
@@ -168,7 +179,7 @@ module.exports = React.createClass({
 
 		);
 	}
-});
+};
 
 
 

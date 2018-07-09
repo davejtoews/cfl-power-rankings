@@ -1,24 +1,26 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import TeamSelect from './TeamSelect';
 import NewWeek from './NewWeek';
 import WeekList from './WeekList';
 
-module.exports = React.createClass({
-	contextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	getInitialState: function() {
-		return {
-			teams: []
-		};
-	},
-	componentWillReceiveProps: function(nextProps) {
+module.exports = class extends React.Component {
+    static contextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    state = {
+        teams: []
+    };
+
+    componentWillReceiveProps(nextProps) {
 		this.setState({
 			teams: nextProps.teams
 		});	
-	},
-	render: function () {
+	}
+
+    render() {
 		var year = (this.props.week) ? this.props.week.year.year : '';
 		var yearId = (this.props.week) ? this.props.week.year._id : false;
 		return(
@@ -56,4 +58,4 @@ module.exports = React.createClass({
 
 		);
 	}
-});
+};

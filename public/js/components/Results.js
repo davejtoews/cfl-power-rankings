@@ -1,24 +1,26 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import ResultsButton from './ResultsButton';
 
-module.exports = React.createClass({
-	contextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	getInitialState: function() {
-		return {
-			results: {results: [], count: 0},
-			markDown: '',
-			records: [],
-			lastWeekName: '',
-			lastWeekResults: []
-		}
-	},
-	componentDidMount: function() {
+module.exports = class extends React.Component {
+    static contextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    state = {
+        results: {results: [], count: 0},
+        markDown: '',
+        records: [],
+        lastWeekName: '',
+        lastWeekResults: []
+    };
+
+    componentDidMount() {
 		this.getStandings();
-	},
-	getRankings: function () {
+	}
+
+    getRankings = () => {
 		var setRankings = this.setRankings;
 		var getLastWeekRankings = this.getLastWeekRankings;
 		this.context.feathersApp.service('rankings').find({query: { week: this.props.weekId, $populate: ['ranks', 'user']}}).then(function(result){
@@ -27,8 +29,9 @@ module.exports = React.createClass({
 		}).catch(function(error){
 				console.error('Error getting this week\'s rankings!', error);
 		});
-	},
-	getLastWeekRankings: function() {
+	};
+
+    getLastWeekRankings = () => {
 		var lastWeekName = this.state.lastWeekName;
 		var setLastWeekResults = this.setLastWeekResults;
 		var context = this.context;
@@ -41,20 +44,23 @@ module.exports = React.createClass({
 		}).catch(function(error){
 				console.error('Error getting last week!', error);
 		});		
-	},
-	getStandings: function() {
+	};
+
+    getStandings = () => {
 		var setRecords = this.setRecords;
 		this.context.feathersApp.io.on('cflStandings', function(records){
 			setRecords(records);
 		});
 		this.context.feathersApp.io.emit('cflStandings');
-	},
-	setRecords: function(records) {
+	};
+
+    setRecords = (records) => {
 		this.setState({
 			records: records
 		});
-	},
-	setLastWeekResults: function(rankings) {
+	};
+
+    setLastWeekResults = (rankings) => {
 		var count = rankings.length;
 		var results = this.state.results;
 		this.setState({
@@ -63,16 +69,18 @@ module.exports = React.createClass({
 		this.setState({
 			markDown: this.createMarkDown(results)
 		})
-	},
-	setRankings: function(rankings) {
+	};
+
+    setRankings = (rankings) => {
 		var count = rankings.length;
 		var results = this.tabulateRankings(rankings, count);
 		this.setState({
 			results: results,
 			markDown: this.createMarkDown(results)
 		});
-	},
-	tabulateRankings: function(rankings, count) {
+	};
+
+    tabulateRankings = (rankings, count) => {
 		var results = {};
 		var teams = [];
 		rankings.forEach(function(ranking) {
@@ -99,8 +107,9 @@ module.exports = React.createClass({
 		var sortedResults = this.sortResults(resultArray);
 		var rankedResults = this.rankResults(sortedResults);
 		return {results: rankedResults, count: count};
-	},
-	sortResults: function(results) {
+	};
+
+    sortResults = (results) => {
 		return results.sort(function(a, b){
 			if (a.points < b.points) {
 				return -1;
@@ -110,8 +119,9 @@ module.exports = React.createClass({
 			}
 			return 0;
 		});
-	},
-	rankResults: function(results) {
+	};
+
+    rankResults = (results) => {
 		for(var i = 0; i < results.length; i++ ) {
 			if (typeof results[i].tie === 'undefined') {
 				results[i].rank = i + 1;
@@ -124,8 +134,9 @@ module.exports = React.createClass({
 			}
 		}
 		return results;
-	},
-	getDelta: function(thisWeekResult) {
+	};
+
+    getDelta = (thisWeekResult) => {
 		var thisWeekRank = thisWeekResult.rank;
 		var lastWeekRank;
 
@@ -136,8 +147,9 @@ module.exports = React.createClass({
 		});
 
 		return lastWeekRank - thisWeekRank;
-	},
-	createMarkDown: function(results) {
+	};
+
+    createMarkDown = (results) => {
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 			tableHead += "-:|-|-|-|-|-|-\n";
 		var tableRows = results.results.map(function(result, key) {
@@ -152,13 +164,15 @@ module.exports = React.createClass({
 		}.bind(this));
 		var tableBody = tableRows.join('');
 		return tableHead + tableBody;
-	},
-	handleChange: function(e) {
+	};
+
+    handleChange = (e) => {
 		this.setState({
 			lastWeekName: e.target.value
 		});
-	},
-	render: function () {
+	};
+
+    render() {
 		return(
 			<aside>
 				<textarea rows="15" cols="75" value={this.state.markDown} />
@@ -178,4 +192,4 @@ module.exports = React.createClass({
 			</aside>
 		);
 	}
-});
+};

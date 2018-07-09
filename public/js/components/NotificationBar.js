@@ -1,20 +1,21 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
 
-module.exports = React.createClass({
-	contextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	getInitialState: function() {
-		return({
-			type: false,
-			message: '',
-			time: 0,
-			clear: false
-		});
-	},
-	componentWillReceiveProps: function (nextProps) {
+module.exports = class extends React.Component {
+    static contextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    state = {
+        type: false,
+        message: '',
+        time: 0,
+        clear: false
+    };
+
+    componentWillReceiveProps(nextProps) {
 		var setNotifications = this.setNotifications;
 		var resetNotifications = this.resetNotifications;
 
@@ -31,22 +32,25 @@ module.exports = React.createClass({
 		} else {
 			setNotifications(nextProps.type, nextProps.message, nextProps.time);
 		}
-	},
-	setNotifications: function (type, message, time) {
+	}
+
+    setNotifications = (type, message, time) => {
 		this.setState({
 			type: type,
 			message: message,
 			time: time,
 			clear: false			
 		})
-	},
-	resetNotifications: function () {
+	};
+
+    resetNotifications = () => {
 		this.setState({
 			clear: 'reset',
 			type: false
 		})
-	},
-	render: function () {
+	};
+
+    render() {
 		var typeClass = (this.state.type) ? this.state.type + ' ' : '';
 		var clearClass = (this.state.clear) ? this.state.clear : '';
 		var notificationClasses = classNames('notification-bar ' + typeClass + clearClass);
@@ -56,4 +60,4 @@ module.exports = React.createClass({
 			</p>
 		);
 	}
-});
+};

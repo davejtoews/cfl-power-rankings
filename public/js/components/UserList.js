@@ -1,29 +1,32 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
-module.exports = React.createClass({
-	contextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	getInitialState: function () {
-		return ({
-			'users': []
-		});
-	},
-	setUsers: function (users) {
+module.exports = class extends React.Component {
+    static contextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    state = {
+        'users': []
+    };
+
+    setUsers = (users) => {
 		this.setState({
 			'users': users
 		});
-	},
-	componentDidMount: function() {
+	};
+
+    componentDidMount() {
 		var setUsers = this.setUsers;
 		this.context.feathersApp.service('users').find({'query': {'$populate' : 'team'}}).then(function(result){
 			setUsers(result.data);
 		}).catch(function(error){
 			console.error('Error getting users!', error);
 		});
-	},
-	render: function () {
+	}
+
+    render() {
 		return(
 			<div className="user-list">
 				<h3>User list</h3>
@@ -45,4 +48,4 @@ module.exports = React.createClass({
 			</div>
 		);
 	}
-});
+};

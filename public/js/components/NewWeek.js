@@ -1,19 +1,21 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
-module.exports = React.createClass({
-	contextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	getInitialState: function() {
-		return { newWeekName: '' }
-	},
-	handleChange: function(e) {
+module.exports = class extends React.Component {
+    static contextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    state = { newWeekName: '' };
+
+    handleChange = (e) => {
 		this.setState({
 			newWeekName: e.target.value
 		});
-	},
-	handleSubmit: function(e) {
+	};
+
+    handleSubmit = (e) => {
 		e.preventDefault();
 		var updateCurrentWeek = this.updateCurrentWeek;
 		var newWeek = {
@@ -25,8 +27,9 @@ module.exports = React.createClass({
 		}).catch(function(error){
 			console.error('Error adding week!', error);
 		});
-	},
-	updateCurrentWeek: function(week) {
+	};
+
+    updateCurrentWeek = (week) => {
 		var setWeek = this.props.setWeek;
 		var setNotifications = this.props.setNotifications;
 		this.context.feathersApp.service('configs').patch(this.props.weekConfig, {value: week._id}).then(function(result){
@@ -36,8 +39,9 @@ module.exports = React.createClass({
 			console.error('Error updating current week!', error);
 			setNotifications('error', 'Problem updating week.');
 		});
-	},
-	render: function() {
+	};
+
+    render() {
 		return(
 			<form className="new-week-form" onSubmit={this.handleSubmit}>
 				<label htmlFor="new-week-name">New Week</label>
@@ -46,4 +50,4 @@ module.exports = React.createClass({
 			</form>
 		);
 	}
-});
+};

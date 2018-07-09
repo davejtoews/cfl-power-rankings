@@ -1,24 +1,25 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
 
-module.exports = React.createClass({
-	contextTypes: {
-		feathersApp: React.PropTypes.object,
-		login: React.PropTypes.bool
-	},
-	getInitialState: function() {
-		return {
-			submission: {
-				user: this.props.userId,
-				ranks: [],
-				week: '',
-				blurb: ''		
-			},
-			submitted: this.props.submitted,
-			waiting: false
-		};
-	},
-	componentWillReceiveProps: function (nextProps) {
+module.exports = class extends React.Component {
+    static contextTypes = {
+		feathersApp: PropTypes.object,
+		login: PropTypes.bool
+	};
+
+    state = {
+        submission: {
+            user: this.props.userId,
+            ranks: [],
+            week: '',
+            blurb: ''		
+        },
+        submitted: this.props.submitted,
+        waiting: false
+    };
+
+    componentWillReceiveProps(nextProps) {
 		this.setState({
 			submission: {
 				user: this.props.userId,
@@ -28,18 +29,21 @@ module.exports = React.createClass({
 			},
 			submitted: nextProps.submitted
 		});	
-	},
-	setWaiting: function (waiting) {
+	}
+
+    setWaiting = (waiting) => {
 		this.setState({
 			waiting: waiting
 		});
-	},
-	getRankList : function(teams) {
+	};
+
+    getRankList = (teams) => {
 		return teams.map(function(team) {
 			return team._id;
 		});
-	},
-	handleClick: function(e) {
+	};
+
+    handleClick = (e) => {
 		e.preventDefault();
 		var setSubmitted = this.props.setSubmitted;
 		var setNotifications = this.props.setNotifications;
@@ -72,8 +76,9 @@ module.exports = React.createClass({
 				});				
 			}
 		}
-	},
-	render: function () {
+	};
+
+    render() {
 		var text = (this.state.submitted) ? 'Update' : 'Submit';
 		var disabled = (this.state.waiting) ? 'disabled' : '';
 		var buttonClasses = classNames('button ' + disabled);
@@ -81,4 +86,4 @@ module.exports = React.createClass({
 			<a href="#" className={ buttonClasses } onClick={ this.handleClick }>{text}</a>
 		);
 	}
-});
+};

@@ -1,25 +1,26 @@
 import React from 'react';
 import classNames from 'classnames';
 
-module.exports = React.createClass({
-	getInitialState: function() {
-		return {
-			ranking: {},
-			open: false
-		};
-	},
-	componentWillReceiveProps: function (nextProps) {
+module.exports = class extends React.Component {
+    state = {
+        ranking: {},
+        open: false
+    };
+
+    componentWillReceiveProps(nextProps) {
 		console.log(nextProps);
 		this.setState({
 			ranking: nextProps.ranking,
 			open: nextProps.open
 		});	
-	},
-	handleClick: function(e) {
+	}
+
+    handleClick = (e) => {
 		e.preventDefault();
 		this.props.closeModal();
-	},
-	render: function () {
+	};
+
+    render() {
 		var statusClass = (this.state.open) ? 'open' : '';
 		var notificationClasses = classNames('modal ' + statusClass);
 		var listItems = '';
@@ -50,4 +51,4 @@ module.exports = React.createClass({
 			</div>
 		);
 	}
-});
+};
