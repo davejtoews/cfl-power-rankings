@@ -15,7 +15,7 @@ var feathersApp = feathers()
 
 // Authenticating using a token
 feathersApp.authenticate().then(function(result){
-  console.log('Authenticated!', feathersApp.get('token'));
+	console.log('Authenticated!', feathersApp.get('token'));
   renderApp(true, result.data.reddit.name, result.data._id, result.data.team, result.data.admin);
 }).catch(function(error){
   console.error('Error authenticating!', error);

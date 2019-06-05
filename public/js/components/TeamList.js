@@ -20,21 +20,21 @@ const SortableList = SortableContainer(({items}) => {
 });
 
 module.exports = class extends React.Component {
-    state = {teams: []};
+    state = {rankedTeams: []};
 
     componentWillReceiveProps(nextProps) {
 		this.setState({
-			teams: nextProps.teams
+			rankedTeams: nextProps.rankedTeams
 		});	
 	}
 
     onSortEnd = (event) => {
-        this.props.setTeams(arrayMove(this.state.teams, event.oldIndex, event.newIndex));
+        this.props.setRankedTeams(arrayMove(this.state.rankedTeams, event.oldIndex, event.newIndex));
     };
 
     render() {
 		return(
-			<SortableList items={this.state.teams} onSortEnd={this.onSortEnd} helperClass="sort-helper"/>
+			<SortableList items={this.state.rankedTeams} onSortEnd={this.onSortEnd} helperClass="sort-helper"/>
 		);
 	}
 };

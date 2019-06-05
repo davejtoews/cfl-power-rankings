@@ -10,66 +10,72 @@ import NotificationBar from './NotificationBar';
 import Blurb from './Blurb';
 
 module.exports = class extends React.Component {
-    static childContextTypes = {
+	static childContextTypes = {
 		feathersApp: PropTypes.object,
 		login: PropTypes.bool
 	};
 
-    state = {
-        week: '',
-        teams: [],
-        weekConfig: '',
-        submitted: false,
-        notification: {
-            type: false,
-            message: '',
-            time: 0
-        }
-    };
+	state = {
+			week: '',
+			teams: [],
+			rankedTeams: [],
+			weekConfig: '',
+			submitted: false,
+			notification: {
+					type: false,
+					message: '',
+					time: 0
+			}
+	};
 
-    getChildContext() {
+	getChildContext() {
 		return { 
 			feathersApp: this.props.feathersApp,
 			login: this.props.login
 		}
 	}
 
-    getInfo = (currentWeekId) => {
+	getInfo = (currentWeekId) => {
 		var setWeek = this.setWeek;
 		var setTeams = this.setTeams;
+		var setRankedTeams = this.setRankedTeams;
 		var getTeams = this.getTeams;
 		var setSubmitted = this.setSubmitted;
 		var setBlurb = this.setBlurb;
+		var rankedTeams = this.state.rankedTeams;
+		var feathersApp = this.props.feathersApp;
 
-		this.props.feathersApp.service('weeks').get(currentWeekId, {query: { $populate: 'year' }}).then(function(result){
+		feathersApp.service('weeks').get(currentWeekId, {query: { $populate: 'year' }}).then(function(result){
 			setWeek(result);
 		});
-		this.props.feathersApp.service('rankings').find({query: {user: this.props.userId, week: currentWeekId, $populate: 'ranks'}}).then(function(result) {
+		feathersApp.service('rankings').find({query: {user: this.props.userId, week: currentWeekId, $populate: 'ranks'}}).then(function(result) {
 			if (result.total) {
-				setTeams(result.data[0].ranks);
+				setRankedTeams(result.data[0].ranks);
 				setSubmitted(result.data[0]._id);
 				setBlurb(result.data[0].blurb);
 			} else {
 				getTeams();
 			}
 		});
-	};
-
-    getTeams = () => {
-		var setTeams = this.setTeams;
-		var feathersApp = this.props.feathersApp;
-		this.props.feathersApp.service('rankings').find({query: {user: this.props.userId, $populate: 'ranks', $sort: {week: -1}, $limit: 1}}).then(function(result) {
-			if (result.total) { // Get last ranking
-				setTeams(result.data[0].ranks); 
-			} else { // Get default team order
-				feathersApp.service('teams').find().then(function(result){
-					setTeams(result.data);
-				});
+		feathersApp.service('teams').find().then(function(result){
+			setTeams(result.data);
+			if (!rankedTeams.length) {
+				setRankedTeams(result.data);
 			}
 		});
 	};
 
-    setWeek = (week) => {
+	getTeams = () => {
+		var setRankedTeams = this.setRankedTeams;
+		var feathersApp = this.props.feathersApp;
+		feathersApp.service('rankings').find({query: {user: this.props.userId, $populate: 'ranks', $sort: {week: -1}, $limit: 1}}).then(function(result) {
+			if (result.total) { // Get last ranking
+				setRankedTeams(result.data[0].ranks); 
+			}
+		});
+	};
+
+	setWeek = (week) => {
 		if (typeof week.year == "string" && week.year == this.state.week.year._id) {
 			week.year = this.state.week.year
 		}
@@ -80,19 +86,25 @@ module.exports = class extends React.Component {
 		});	
 	};
 
-    setTeams = (teams) => {
+	setTeams = (teams) => {
 		this.setState({
 			teams: teams
 		});
 	};
 
-    setBlurb = (blurb) => {
+	setRankedTeams = (rankedTeams) => {
+		this.setState({
+			rankedTeams: rankedTeams.filter(team => team.cflId > 0)
+		});
+	};
+
+	setBlurb = (blurb) => {
 		this.setState({
 			blurb: blurb
 		});
 	};
 
-    setWeekConfig = (weekConfig) => {
+	setWeekConfig = (weekConfig) => {
 		this.setState({
 			weekConfig: weekConfig
 		});
@@ -104,7 +116,7 @@ module.exports = class extends React.Component {
 		});
 	};
 
-    componentDidMount() {
+	componentDidMount() {
 		if(!this.props.login) {
 			this.setNotifications('error', 'Please login to access this app.')
 		} else if (!this.props.admin) {
@@ -119,7 +131,7 @@ module.exports = class extends React.Component {
 		}
 	}
 
-    setNotifications = (type, message) => {
+	setNotifications = (type, message) => {
 		this.setState({
 			notification: {
 				type: type,
@@ -129,7 +141,7 @@ module.exports = class extends React.Component {
 		})
 	};
 
-    render() {
+	render() {
 		return(
 			<div className="app-wrapper">
 				<header>
@@ -153,15 +165,15 @@ module.exports = class extends React.Component {
 				/>
 				<main>
 					<TeamList 
-						teams={this.state.teams} 
-						setTeams={this.setTeams} 
+						rankedTeams={this.state.rankedTeams} 
+						setRankedTeams={this.setRankedTeams} 
 					/>
 					<Blurb 
 						blurb={this.state.blurb}
 						setBlurb={this.setBlurb}
 					/>
 					<SubmitButton 
-						teams={this.state.teams}
+						rankedTeams={this.state.rankedTeams}
 						blurb={this.state.blurb}
 						weekId={this.state.week._id} 
 						userId={this.props.userId}

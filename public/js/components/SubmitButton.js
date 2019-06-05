@@ -23,7 +23,7 @@ module.exports = class extends React.Component {
 		this.setState({
 			submission: {
 				user: this.props.userId,
-				ranks: this.getRankList(nextProps.teams),
+				ranks: this.getRankList(nextProps.rankedTeams),
 				week: nextProps.weekId,
 				blurb: nextProps.blurb
 			},
@@ -37,8 +37,8 @@ module.exports = class extends React.Component {
 		});
 	};
 
-    getRankList = (teams) => {
-		return teams.map(function(team) {
+    getRankList = (rankedTeams) => {
+		return rankedTeams.map(function(team) {
 			return team._id;
 		});
 	};

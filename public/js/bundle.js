@@ -22499,6 +22499,7 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = _class.__proto__ || Object.getPrototypeOf(_class)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 			week: '',
 			teams: [],
+			rankedTeams: [],
 			weekConfig: '',
 			submitted: false,
 			notification: {
@@ -22509,34 +22510,38 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 		}, _this.getInfo = function (currentWeekId) {
 			var setWeek = _this.setWeek;
 			var setTeams = _this.setTeams;
+			var setRankedTeams = _this.setRankedTeams;
 			var getTeams = _this.getTeams;
 			var setSubmitted = _this.setSubmitted;
 			var setBlurb = _this.setBlurb;
+			var rankedTeams = _this.state.rankedTeams;
+			var feathersApp = _this.props.feathersApp;
 
-			_this.props.feathersApp.service('weeks').get(currentWeekId, { query: { $populate: 'year' } }).then(function (result) {
+			feathersApp.service('weeks').get(currentWeekId, { query: { $populate: 'year' } }).then(function (result) {
 				setWeek(result);
 			});
-			_this.props.feathersApp.service('rankings').find({ query: { user: _this.props.userId, week: currentWeekId, $populate: 'ranks' } }).then(function (result) {
+			feathersApp.service('rankings').find({ query: { user: _this.props.userId, week: currentWeekId, $populate: 'ranks' } }).then(function (result) {
 				if (result.total) {
-					setTeams(result.data[0].ranks);
+					setRankedTeams(result.data[0].ranks);
 					setSubmitted(result.data[0]._id);
 					setBlurb(result.data[0].blurb);
 				} else {
 					getTeams();
 				}
 			});
+			feathersApp.service('teams').find().then(function (result) {
+				setTeams(result.data);
+				if (!rankedTeams.length) {
+					setRankedTeams(result.data);
+				}
+			});
 		}, _this.getTeams = function () {
-			var setTeams = _this.setTeams;
+			var setRankedTeams = _this.setRankedTeams;
 			var feathersApp = _this.props.feathersApp;
-			_this.props.feathersApp.service('rankings').find({ query: { user: _this.props.userId, $populate: 'ranks', $sort: { week: -1 }, $limit: 1 } }).then(function (result) {
+			feathersApp.service('rankings').find({ query: { user: _this.props.userId, $populate: 'ranks', $sort: { week: -1 }, $limit: 1 } }).then(function (result) {
 				if (result.total) {
 					// Get last ranking
-					setTeams(result.data[0].ranks);
-				} else {
-					// Get default team order
-					feathersApp.service('teams').find().then(function (result) {
-						setTeams(result.data);
-					});
+					setRankedTeams(result.data[0].ranks);
 				}
 			});
 		}, _this.setWeek = function (week) {
@@ -22551,6 +22556,12 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 		}, _this.setTeams = function (teams) {
 			_this.setState({
 				teams: teams
+			});
+		}, _this.setRankedTeams = function (rankedTeams) {
+			_this.setState({
+				rankedTeams: rankedTeams.filter(function (team) {
+					return team.cflId > 0;
+				})
 			});
 		}, _this.setBlurb = function (blurb) {
 			_this.setState({
@@ -22630,15 +22641,15 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 					'main',
 					null,
 					_react2.default.createElement(_TeamList2.default, {
-						teams: this.state.teams,
-						setTeams: this.setTeams
+						rankedTeams: this.state.rankedTeams,
+						setRankedTeams: this.setRankedTeams
 					}),
 					_react2.default.createElement(_Blurb2.default, {
 						blurb: this.state.blurb,
 						setBlurb: this.setBlurb
 					}),
 					_react2.default.createElement(_SubmitButton2.default, {
-						teams: this.state.teams,
+						rankedTeams: this.state.rankedTeams,
 						blurb: this.state.blurb,
 						weekId: this.state.week._id,
 						userId: this.props.userId,
@@ -23564,8 +23575,8 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 			_this.setState({
 				waiting: waiting
 			});
-		}, _this.getRankList = function (teams) {
-			return teams.map(function (team) {
+		}, _this.getRankList = function (rankedTeams) {
+			return rankedTeams.map(function (team) {
 				return team._id;
 			});
 		}, _this.handleClick = function (e) {
@@ -23605,7 +23616,7 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 			this.setState({
 				submission: {
 					user: this.props.userId,
-					ranks: this.getRankList(nextProps.teams),
+					ranks: this.getRankList(nextProps.rankedTeams),
 					week: nextProps.weekId,
 					blurb: nextProps.blurb
 				},
@@ -23692,8 +23703,8 @@ module.exports = function (_React$Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref3 = _class2.__proto__ || Object.getPrototypeOf(_class2)).call.apply(_ref3, [this].concat(args))), _this), _this.state = { teams: [] }, _this.onSortEnd = function (event) {
-      _this.props.setTeams((0, _reactSortableHoc.arrayMove)(_this.state.teams, event.oldIndex, event.newIndex));
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref3 = _class2.__proto__ || Object.getPrototypeOf(_class2)).call.apply(_ref3, [this].concat(args))), _this), _this.state = { rankedTeams: [] }, _this.onSortEnd = function (event) {
+      _this.props.setRankedTeams((0, _reactSortableHoc.arrayMove)(_this.state.rankedTeams, event.oldIndex, event.newIndex));
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
@@ -23701,13 +23712,13 @@ module.exports = function (_React$Component) {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
       this.setState({
-        teams: nextProps.teams
+        rankedTeams: nextProps.rankedTeams
       });
     }
   }, {
     key: 'render',
     value: function render() {
-      return _react2.default.createElement(SortableList, { items: this.state.teams, onSortEnd: this.onSortEnd, helperClass: 'sort-helper' });
+      return _react2.default.createElement(SortableList, { items: this.state.rankedTeams, onSortEnd: this.onSortEnd, helperClass: 'sort-helper' });
     }
   }]);
 
@@ -24178,7 +24189,7 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 "use strict";
 
 module.exports = {
-    "host": "http://localhost:3030"
+	"host": "http://localhost:3030"
 };
 
 },{}],210:[function(require,module,exports){
@@ -24209,15 +24220,15 @@ var feathersApp = feathers().configure(feathers.socketio(socket)).configure(feat
 
 // Authenticating using a token
 feathersApp.authenticate().then(function (result) {
-		console.log('Authenticated!', feathersApp.get('token'));
-		renderApp(true, result.data.reddit.name, result.data._id, result.data.team, result.data.admin);
+	console.log('Authenticated!', feathersApp.get('token'));
+	renderApp(true, result.data.reddit.name, result.data._id, result.data.team, result.data.admin);
 }).catch(function (error) {
-		console.error('Error authenticating!', error);
-		renderApp(false, 'unknown');
+	console.error('Error authenticating!', error);
+	renderApp(false, 'unknown');
 });
 
 function renderApp(login, username, userId, userTeam, admin) {
-		(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam, admin: admin }), document.getElementById('App'));
+	(0, _reactDom.render)(_react2.default.createElement(_App2.default, { feathersApp: feathersApp, login: login, username: username, userId: userId, userTeam: userTeam, admin: admin }), document.getElementById('App'));
 }
 
 },{"./components/App":194,"./config.js":209,"react":193,"react-dom":35}]},{},[210]);

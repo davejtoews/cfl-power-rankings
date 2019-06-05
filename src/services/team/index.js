@@ -10,8 +10,8 @@ module.exports = function() {
   const options = {
     Model: team,
     paginate: {
-      default: 9,
-      max: 9
+      default: 10,
+      max: 10
     }
   };
 
