@@ -20,7 +20,7 @@ module.exports = class extends React.Component {
 		this.getStandings();
 	}
 
-    getRankings = () => {
+	getRankings = () => {
 		var setRankings = this.setRankings;
 		var getLastWeekRankings = this.getLastWeekRankings;
 		this.context.feathersApp.service('rankings').find({query: { week: this.props.weekId, $populate: ['ranks', 'user']}}).then(function(result){
@@ -31,11 +31,12 @@ module.exports = class extends React.Component {
 		});
 	};
 
-    getLastWeekRankings = () => {
+	getLastWeekRankings = () => {
 		var lastWeekName = this.state.lastWeekName;
+		var currentYearId = this.props.yearId;
 		var setLastWeekResults = this.setLastWeekResults;
 		var context = this.context;
-		context.feathersApp.service('weeks').find({query: { name: lastWeekName }}).then(function(result){
+		context.feathersApp.service('weeks').find({query: { name: lastWeekName, year: currentYearId }}).then(function(result){
 			context.feathersApp.service('rankings').find({query: { week: result.data[0]._id, $populate: ['ranks', 'user']}}).then(function(result){
 				setLastWeekResults(result.data);
 			}).catch(function(error){
@@ -46,7 +47,7 @@ module.exports = class extends React.Component {
 		});		
 	};
 
-    getStandings = () => {
+	getStandings = () => {
 		var setRecords = this.setRecords;
 		this.context.feathersApp.io.on('cflStandings', function(records){
 			setRecords(records);
@@ -54,13 +55,13 @@ module.exports = class extends React.Component {
 		this.context.feathersApp.io.emit('cflStandings');
 	};
 
-    setRecords = (records) => {
+	setRecords = (records) => {
 		this.setState({
 			records: records
 		});
 	};
 
-    setLastWeekResults = (rankings) => {
+	setLastWeekResults = (rankings) => {
 		var count = rankings.length;
 		var results = this.state.results;
 		this.setState({
@@ -71,7 +72,7 @@ module.exports = class extends React.Component {
 		})
 	};
 
-    setRankings = (rankings) => {
+	setRankings = (rankings) => {
 		var count = rankings.length;
 		var results = this.tabulateRankings(rankings, count);
 		this.setState({
@@ -80,9 +81,10 @@ module.exports = class extends React.Component {
 		});
 	};
 
-    tabulateRankings = (rankings, count) => {
+	tabulateRankings = (rankings, count) => {
 		var results = {};
 		var teams = [];
+		var nuetral = '';
 		rankings.forEach(function(ranking) {
 			if (!teams.includes(ranking.user.team)) {
 				teams.push(ranking.user.team);
@@ -100,16 +102,20 @@ module.exports = class extends React.Component {
 					}
 					
 				});
-				results[ranking.user.team]['blurb'] = ranking.blurb;
+				if (results.hasOwnProperty(ranking.user.team)) {
+					results[ranking.user.team]['blurb'] = ranking.blurb;
+				} else {
+					nuetral = ranking.blurb;
+				}
 			}
 		});
 		var resultArray = Object.keys(results).map(key => results[key]);
 		var sortedResults = this.sortResults(resultArray);
 		var rankedResults = this.rankResults(sortedResults);
-		return {results: rankedResults, count: count};
+		return {results: rankedResults, count: count, nuetral: nuetral};
 	};
 
-    sortResults = (results) => {
+	sortResults = (results) => {
 		return results.sort(function(a, b){
 			if (a.points < b.points) {
 				return -1;
@@ -121,7 +127,7 @@ module.exports = class extends React.Component {
 		});
 	};
 
-    rankResults = (results) => {
+	rankResults = (results) => {
 		for(var i = 0; i < results.length; i++ ) {
 			if (typeof results[i].tie === 'undefined') {
 				results[i].rank = i + 1;
@@ -136,7 +142,7 @@ module.exports = class extends React.Component {
 		return results;
 	};
 
-    getDelta = (thisWeekResult) => {
+	getDelta = (thisWeekResult) => {
 		var thisWeekRank = thisWeekResult.rank;
 		var lastWeekRank;
 
@@ -149,7 +155,7 @@ module.exports = class extends React.Component {
 		return lastWeekRank - thisWeekRank;
 	};
 
-    createMarkDown = (results) => {
+	createMarkDown = (results) => {
 		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
 			tableHead += "-:|-|-|-|-|-|-\n";
 		var tableRows = results.results.map(function(result, key) {
@@ -163,16 +169,17 @@ module.exports = class extends React.Component {
 			return result.rank + tie + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ average +"|" + blurb + "\n";
 		}.bind(this));
 		var tableBody = tableRows.join('');
-		return tableHead + tableBody;
+		var tableFoot = results.nuetral ? "-|[](/ATL)|Atlantic||Undefeated||" + results.nuetral + "\n" : "";
+		return tableHead + tableBody + tableFoot;
 	};
 
-    handleChange = (e) => {
+	handleChange = (e) => {
 		this.setState({
 			lastWeekName: e.target.value
 		});
 	};
 
-    render() {
+	render() {
 		return(
 			<aside>
 				<textarea rows="15" cols="75" value={this.state.markDown} />

@@ -40,7 +40,7 @@ app.use(compress())
     io.on('connection', function(socket) {
       socket.on('cflStandings', function () {
         var apiKeys = app.get('apiKeys');
-        fetch('http://api.cfl.ca/v1/standings/2018?key=' + apiKeys.CFL)
+        fetch('http://api.cfl.ca/v1/standings/2019?key=' + apiKeys.CFL)
             .then(function(res) {
                 return res.json();
             }).then(function(json) {

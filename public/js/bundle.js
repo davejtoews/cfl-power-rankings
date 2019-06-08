@@ -22659,7 +22659,8 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 					})
 				),
 				_react2.default.createElement(_Results2.default, {
-					weekId: this.state.week._id
+					weekId: this.state.week._id,
+					yearId: this.state.week.year
 				}),
 				_react2.default.createElement(_UserList2.default, null)
 			);
@@ -23292,9 +23293,10 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 			});
 		}, _this.getLastWeekRankings = function () {
 			var lastWeekName = _this.state.lastWeekName;
+			var currentYearId = _this.props.yearId;
 			var setLastWeekResults = _this.setLastWeekResults;
 			var context = _this.context;
-			context.feathersApp.service('weeks').find({ query: { name: lastWeekName } }).then(function (result) {
+			context.feathersApp.service('weeks').find({ query: { name: lastWeekName, year: currentYearId } }).then(function (result) {
 				context.feathersApp.service('rankings').find({ query: { week: result.data[0]._id, $populate: ['ranks', 'user'] } }).then(function (result) {
 					setLastWeekResults(result.data);
 				}).catch(function (error) {
@@ -23332,6 +23334,7 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 		}, _this.tabulateRankings = function (rankings, count) {
 			var results = {};
 			var teams = [];
+			var nuetral = '';
 			rankings.forEach(function (ranking) {
 				if (!teams.includes(ranking.user.team)) {
 					teams.push(ranking.user.team);
@@ -23348,7 +23351,11 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 							};
 						}
 					});
-					results[ranking.user.team]['blurb'] = ranking.blurb;
+					if (results.hasOwnProperty(ranking.user.team)) {
+						results[ranking.user.team]['blurb'] = ranking.blurb;
+					} else {
+						nuetral = ranking.blurb;
+					}
 				}
 			});
 			var resultArray = Object.keys(results).map(function (key) {
@@ -23356,7 +23363,7 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 			});
 			var sortedResults = _this.sortResults(resultArray);
 			var rankedResults = _this.rankResults(sortedResults);
-			return { results: rankedResults, count: count };
+			return { results: rankedResults, count: count, nuetral: nuetral };
 		}, _this.sortResults = function (results) {
 			return results.sort(function (a, b) {
 				if (a.points < b.points) {
@@ -23405,7 +23412,8 @@ module.exports = (_temp2 = _class = function (_React$Component) {
 				return result.rank + tie + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|" + average + "|" + blurb + "\n";
 			}.bind(_this));
 			var tableBody = tableRows.join('');
-			return tableHead + tableBody;
+			var tableFoot = results.nuetral ? "-|[](/ATL)|Atlantic||Undefeated||" + results.nuetral + "\n" : "";
+			return tableHead + tableBody + tableFoot;
 		}, _this.handleChange = function (e) {
 			_this.setState({
 				lastWeekName: e.target.value

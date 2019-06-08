@@ -184,7 +184,8 @@ module.exports = class extends React.Component {
 				</main>
 
 				<Results 
-					weekId={this.state.week._id} 
+					weekId={this.state.week._id}
+					yearId={this.state.week.year}
 				/>
 				<UserList />
 			</div>
