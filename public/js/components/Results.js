@@ -44,7 +44,7 @@ module.exports = class extends React.Component {
 			});
 		}).catch(function(error){
 				console.error('Error getting last week!', error);
-		});		
+		});
 	};
 
 	getStandings = () => {
@@ -98,9 +98,9 @@ module.exports = class extends React.Component {
 							'location' : rank.location,
 							'cflId': rank.cflId,
 							'flair': rank.flair
-						}					
+						}
 					}
-					
+
 				});
 				if (results.hasOwnProperty(ranking.user.team)) {
 					results[ranking.user.team]['blurb'] = ranking.blurb;
@@ -132,7 +132,7 @@ module.exports = class extends React.Component {
 			if (typeof results[i].tie === 'undefined') {
 				results[i].rank = i + 1;
 			} else {
-				results[i].rank = results[i].tie 
+				results[i].rank = results[i].tie
 			}
 			if (i < results.length - 1 && results[i].points === results[i + 1].points) {
 				results[i].tie = results[i].rank;
@@ -156,8 +156,8 @@ module.exports = class extends React.Component {
 	};
 
 	createMarkDown = (results) => {
-		var tableHead = "Rank| |Team|Δ|Record|Avg|Comment\n";
-			tableHead += "-:|-|-|-|-|-|-\n";
+		var tableHead = "Rank| |Team|Δ|Record|Avg\n";
+			tableHead += "-:|-|-|-|-|-\n";
 		var tableRows = results.results.map(function(result, key) {
 			var delta = 0;
 			if(this.state.lastWeekResults.count) {
@@ -166,11 +166,16 @@ module.exports = class extends React.Component {
 			var average = Math.round(result.points / results.count * 100) / 100;
 			var blurb = (result.blurb) ? result.blurb.replace(/\n/g, "") : '';
 			var tie = (typeof result.tie === 'undefined') ? '' : 'T';
-			return result.rank + tie + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ average +"|" + blurb + "\n";
-		}.bind(this));
-		var tableBody = tableRows.join('');
-		var tableFoot = results.nuetral ? "-|[](/ATL)|Atlantic||Undefeated||" + results.nuetral + "\n" : "";
-		return tableHead + tableBody + tableFoot;
+			return result.rank + tie + "|" + result.flair + "|" + result.location + "|" + delta + "|" + this.state.records[result.cflId] + "|"+ average + "\n";
+    }.bind(this));
+    var blurbList = results.results.map(function (result, key) {
+      var blurb = (result.blurb) ? result.blurb.replace(/\n/g, "") : '';
+      return '1. **' + result.location + ":** " + blurb + "\n";
+    }.bind(this));
+    var tableBody = tableRows.join('');
+    var blurbs = blurbList.join('');
+		var tableFoot = results.nuetral ? "Arphs summary: \n" + results.nuetral + "\n" : "";
+		return tableHead + tableBody + "\n" + blurbs + "\n" + tableFoot;
 	};
 
 	handleChange = (e) => {
