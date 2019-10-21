@@ -10,8 +10,8 @@ module.exports = function() {
   const options = {
     Model: week,
     paginate: {
-      default: 20,
-      max: 20
+      default: 24,
+      max: 24
     }
   };
 
