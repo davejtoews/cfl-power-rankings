@@ -14,6 +14,7 @@ const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const services = require('./services');
 const fetch = require('node-fetch');
+const idLookup = require('./idLookup');
 
 const app = feathers();
 
@@ -39,22 +40,20 @@ app.use(compress())
   .configure(socketio(function(io) {
     io.on('connection', function(socket) {
       socket.on('cflStandings', function () {
-        var apiKeys = app.get('apiKeys');
-        fetch('http://api.cfl.ca/v1/standings/2023?key=' + apiKeys.CFL)
-            .then(function(res) {
-                return res.json();
-            }).then(function(json) {
-                var westStandings = json.data.divisions.west.standings;
-                var standings = westStandings.concat(json.data.divisions.east.standings);
-                var records = {};
-                standings.forEach(function(team) {
-                  var recordString = team.wins + "-";
-                      recordString += team.losses + "-";
-                      recordString += team.ties;
-                  records[team.team_id] = recordString;
-                });
-                socket.emit('cflStandings', records);
-            });
+        fetch('https://cflscoreboard.cfl.ca/json/scoreboard/squads.json')
+          .then(function(res) {
+            return res.json();
+          }).then(function(json) {
+              var records = {};
+              json.forEach(function(team) {
+                console.log(team);
+                var recordString = team.wins + "-";
+                    recordString += team.loss + "-";
+                    recordString += team.draw;
+                records[idLookup[team.id]] = recordString;
+              });
+              socket.emit('cflStandings', records);
+          });
       });
     });
   }, {timeout: 10000}))

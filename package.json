@@ -13,14 +13,14 @@
   "contributors": [],
   "bugs": {},
   "engines": {
-    "node": ">= 0.12.0"
+    "node": "8"
   },
   "scripts": {
     "test": "npm run jshint && npm run mocha",
     "jshint": "jshint src/. test/. --config",
     "start": "node src/",
     "mocha": "mocha test/ --recursive",
-    "build": "webpack"
+    "build": "gulp"
   },
   "dependencies": {
     "babel-core": "^6.26.3",

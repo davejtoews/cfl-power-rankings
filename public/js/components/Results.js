@@ -36,15 +36,17 @@ module.exports = class extends React.Component {
 		var currentYearId = this.props.yearId;
 		var setLastWeekResults = this.setLastWeekResults;
 		var context = this.context;
-		context.feathersApp.service('weeks').find({query: { name: lastWeekName, year: currentYearId }}).then(function(result){
-			context.feathersApp.service('rankings').find({query: { week: result.data[0]._id, $populate: ['ranks', 'user']}}).then(function(result){
-				setLastWeekResults(result.data);
+		if (lastWeekName) {
+			context.feathersApp.service('weeks').find({query: { name: lastWeekName, year: currentYearId }}).then(function(result){
+				context.feathersApp.service('rankings').find({query: { week: result.data[0]._id, $populate: ['ranks', 'user']}}).then(function(result){
+					setLastWeekResults(result.data);
+				}).catch(function(error){
+						console.error('Error getting last week\'s rankings!', error);
+				});
 			}).catch(function(error){
-					console.error('Error getting last week\'s rankings!', error);
+					console.error('Error getting last week!', error);
 			});
-		}).catch(function(error){
-				console.error('Error getting last week!', error);
-		});
+		}
 	};
 
 	getStandings = () => {
