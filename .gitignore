@@ -38,6 +38,7 @@ node_modules
 
 lib/
 data/
+dump/
 
 config/default.json
 config/production.json
