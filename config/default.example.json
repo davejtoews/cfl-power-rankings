@@ -16,7 +16,9 @@
       "permissions": {
         "scope": ["identity"]
       },
-      "successRedirect" : "/"
+      "successRedirect" : "/",
+      "authorizationURL": "https://www.reddit.com/api/v1/authorize",
+      "tokenURL": "https://www.reddit.com/api/v1/access_token"
     }
   },
   "corsWhitelist": [],
